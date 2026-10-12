@@ -15,7 +15,7 @@ function App() {
 
   useEffect(() => {
     // Fetch server status
-    fetch('http://localhost:5001/api/status')
+    fetch('http://localhost:5000/api/status')
       .then(res => res.json())
       .then(data => setServerMessage(data.message))
       .catch(() => setServerMessage('Backend is offline 🔴'));
@@ -25,7 +25,7 @@ function App() {
   }, []);
 
   const fetchTransactions = () => {
-    fetch('http://localhost:5001/api/transactions')
+    fetch('http://localhost:5000/api/transactions')
       .then(res => res.json())
       .then(data => setTransactions(data))
       .catch(err => console.error('Fetch error:', err));
@@ -36,7 +36,7 @@ function App() {
     const newRecord = { type, amount: Number(amount), category };
 
     // Send new transaction to backend
-    fetch('http://localhost:5001/api/transactions', {
+    fetch('http://localhost:5000/api/transactions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newRecord)
