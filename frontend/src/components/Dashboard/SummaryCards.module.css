@@ -1,0 +1,61 @@
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background-color: #17181f;
+  border: 1px solid #282a36;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: left;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.icon {
+  font-size: 20px;
+}
+
+.value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.positive {
+  color: #10b981;
+}
+
+.negative {
+  color: #ef4444;
+}
+
+.incomeValue {
+  color: #10b981;
+}
+
+.expenseValue {
+  color: #f87171;
+}

@@ -2,66 +2,37 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
+const authRoutes = require('./src/routes/auth');
+const transactionRoutes = require('./src/routes/transactions');
+const categoryRoutes = require('./src/routes/categories');
+
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Temporary data storage in RAM
-let transactions = [];
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/categories', categoryRoutes);
 
-// Default categories
-const categories = {
-    income: ['Salary', 'Freelance', 'Gift', 'Other'],
-    expense: ['Food', 'Transport', 'Rent', 'Entertainment', 'Health', 'Other']
-};
-
-// Route to check server status
+// Health check endpoint
 app.get('/api/status', (req, res) => {
-    res.json({ 
-        message: "LifeTrack Server is running smoothly!",
-        timestamp: new Date().toISOString()
-    });
+  res.json({
+    message: "LifeTrack Server is running smoothly!",
+    database: "Connected (PostgreSQL / Neon)",
+    timestamp: new Date().toISOString()
+  });
 });
 
-// Route to get all categories
-app.get('/api/categories', (req, res) => {
-    res.json(categories);
-});
-
-// Route to add a new transaction (Income/Expense)
-app.post('/api/transactions', (req, res) => {
-    const { type, amount, category, comment } = req.body;
-
-    // Basic validation
-    if (!type || !amount || !category) {
-        return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    const newTransaction = {
-        id: Date.now(),
-        type,      // "income" or "expense"
-        amount: Number(amount),
-        category,
-        comment: comment || "",
-        date: new Date().toLocaleString()
-    };
-
-    transactions.push(newTransaction);
-    console.log(`New record added: ${type} - ${amount} [${category}]`);
-
-    res.json({ 
-        message: "Transaction recorded successfully!",
-        data: newTransaction,
-        count: transactions.length
-    });
-});
-
-// Route to get all recorded transactions
-app.get('/api/transactions', (req, res) => {
-    res.json(transactions);
+// Central error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled Server Error:', err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 LifeTrack Server is running on port ${PORT}`);
 });

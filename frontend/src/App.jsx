@@ -1,141 +1,100 @@
-import { useState, useEffect } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { useState, useEffect, useCallback } from 'react';
+import styles from './App.module.css';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { api } from './api/client';
+import Navbar from './components/Navbar/Navbar';
+import AuthModal from './components/Auth/AuthModal';
+import SummaryCards from './components/Dashboard/SummaryCards';
+import TransactionForm from './components/Dashboard/TransactionForm';
+import ExpensesChart from './components/Dashboard/ExpensesChart';
+import TransactionList from './components/Dashboard/TransactionList';
 
-// Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-function App() {
-  const [serverMessage, setServerMessage] = useState('Connecting...');
+function MainApp() {
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const [serverMessage, setServerMessage] = useState('Checking connection...');
   const [transactions, setTransactions] = useState([]);
-  
-  const [amount, setAmount] = useState('');
-  const [type, setType] = useState('expense');
-  const [category, setCategory] = useState('Food');
+  const [stats, setStats] = useState(null);
+  const [categories, setCategories] = useState({ income: [], expense: [] });
+  const [loadingData, setLoadingData] = useState(false);
 
+  // Check backend server status
   useEffect(() => {
-    // Fetch server status
-    fetch('http://localhost:5000/api/status')
-      .then(res => res.json())
-      .then(data => setServerMessage(data.message))
-      .catch(() => setServerMessage('Backend is offline 🔴'));
-
-    // Load initial transactions
-    fetchTransactions();
+    api.getStatus()
+      .then(res => setServerMessage(res.message))
+      .catch(() => setServerMessage('Backend Offline 🔴'));
   }, []);
 
-  const fetchTransactions = () => {
-    fetch('http://localhost:5000/api/transactions')
-      .then(res => res.json())
-      .then(data => setTransactions(data))
-      .catch(err => console.error('Fetch error:', err));
+  // Fetch user transactions, stats, and categories
+  const loadDashboardData = useCallback(async () => {
+    if (!isAuthenticated) return;
+    setLoadingData(true);
+    try {
+      const [txList, statsData, catsData] = await Promise.all([
+        api.getTransactions(),
+        api.getStats(),
+        api.getCategories()
+      ]);
+      setTransactions(txList);
+      setStats(statsData);
+      setCategories(catsData);
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
+    } finally {
+      setLoadingData(false);
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
+
+  const handleAddTransaction = async (newTx) => {
+    await api.createTransaction(newTx);
+    await loadDashboardData();
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newRecord = { type, amount: Number(amount), category };
-
-    // Send new transaction to backend
-    fetch('http://localhost:5000/api/transactions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newRecord)
-    })
-    .then(res => res.json())
-    .then(() => {
-      setAmount('');
-      fetchTransactions();
-    });
+  const handleDeleteTransaction = async (id) => {
+    if (!window.confirm('Точно удалить эту операцию?')) return;
+    await api.deleteTransaction(id);
+    await loadDashboardData();
   };
 
-  // --- CHART LOGIC ---
-  // Filter only expenses for the pie chart
-  const expenses = transactions.filter(t => t.type === 'expense');
-  
-  // Get unique categories
-  const uniqueCategories = [...new Set(expenses.map(t => t.category))];
-  
-  // Calculate total amount per category
-  const dataPoints = uniqueCategories.map(cat => {
-    return expenses
-      .filter(t => t.category === cat)
-      .reduce((sum, t) => sum + t.amount, 0);
-  });
-
-  // Prepare data object for Chart.js
-  const chartData = {
-    labels: uniqueCategories,
-    datasets: [
-      {
-        data: dataPoints,
-        backgroundColor: [
-          '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+  if (authLoading) {
+    return <div className={styles.loadingSpinner}>Загрузка LifeTrack...</div>;
+  }
 
   return (
-    <div style={{ padding: '40px', fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>LifeTrack Dashboard</h1>
-      <p style={{ color: '#4CAF50' }}>{serverMessage}</p>
+    <div className={styles.container}>
+      <Navbar serverMessage={serverMessage} />
 
-      {/* Input Form Section */}
-      <div style={{ padding: '20px', backgroundColor: '#1e1e1e', borderRadius: '8px', color: 'white', marginBottom: '20px' }}>
-        <h3>Add New Transaction</h3>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <select value={type} onChange={(e) => setType(e.target.value)} style={{ padding: '8px' }}>
-            <option value="expense">Expense (-)</option>
-            <option value="income">Income (+)</option>
-          </select>
-          <input 
-            type="number" placeholder="Amount (PLN)" value={amount} 
-            onChange={(e) => setAmount(e.target.value)} style={{ padding: '8px', width: '120px' }} required
+      {!isAuthenticated ? (
+        <AuthModal />
+      ) : (
+        <>
+          <SummaryCards stats={stats} />
+          
+          <TransactionForm 
+            categories={categories} 
+            onAddTransaction={handleAddTransaction} 
           />
-          <input 
-            type="text" placeholder="Category (e.g. Rent)" value={category} 
-            onChange={(e) => setCategory(e.target.value)} style={{ padding: '8px' }} required
-          />
-          <button type="submit" style={{ padding: '8px 16px', backgroundColor: '#4CAF50', border: 'none', color: 'white', cursor: 'pointer', borderRadius: '4px' }}>
-            Add
-          </button>
-        </form>
-      </div>
 
-      {/* Chart and Transaction List Section */}
-      <div style={{ display: 'flex', gap: '20px' }}>
-        
-        {/* Pie Chart Container */}
-        <div style={{ flex: 1, padding: '20px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
-          <h3 style={{ color: 'black', textAlign: 'center', marginTop: 0 }}>Expenses Breakdown</h3>
-          {expenses.length > 0 ? (
-            <Pie data={chartData} />
-          ) : (
-            <p style={{ color: 'black', textAlign: 'center' }}>Add some expenses to see the chart</p>
-          )}
-        </div>
-
-        {/* Transaction History Container */}
-        <div style={{ flex: 1, padding: '20px', backgroundColor: '#f5f5f5', borderRadius: '8px', color: 'black' }}>
-          <h3 style={{ marginTop: 0 }}>Recent Transactions</h3>
-          {transactions.length === 0 ? <p>No records yet.</p> : (
-            <ul style={{ listStyle: 'none', padding: 0 }}>
-              {transactions.map((t, index) => (
-                <li key={index} style={{ padding: '10px', borderBottom: '1px solid #ddd', display: 'flex', justifyContent: 'space-between' }}>
-                  <span><strong>{t.category}</strong></span>
-                  <span style={{ color: t.type === 'expense' ? 'red' : 'green', fontWeight: 'bold' }}>
-                    {t.type === 'expense' ? '-' : '+'}{t.amount} PLN
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-      </div>
+          <div className={styles.dashboardGrid}>
+            <ExpensesChart categoryBreakdown={stats?.categoryBreakdown} />
+            <TransactionList 
+              transactions={transactions} 
+              onDeleteTransaction={handleDeleteTransaction} 
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
+  );
+}

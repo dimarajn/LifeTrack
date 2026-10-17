@@ -1,0 +1,131 @@
+.authContainer {
+  max-width: 420px;
+  margin: 60px auto;
+  background-color: #1a1b24;
+  border: 1px solid #2d303f;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  color: #f3f4f6;
+  text-align: left;
+}
+
+.title {
+  margin: 0 0 8px 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.tabButtons {
+  display: flex;
+  background-color: #12131a;
+  padding: 4px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #9ca3af;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabBtnActive {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #d1d5db;
+}
+
+.input {
+  background-color: #12131a;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  border-color: #3b82f6;
+}
+
+.submitBtn {
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.submitBtn:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.demoBtn {
+  background-color: #282a36;
+  color: #93c5fd;
+  border: 1px dashed #3b82f6;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 12px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.demoBtn:hover {
+  background-color: #313545;
+}
+
+.errorBanner {
+  background-color: rgba(239, 68, 68, 0.15);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
