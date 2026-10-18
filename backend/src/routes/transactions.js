@@ -7,14 +7,39 @@ const router = express.Router();
 // All transaction routes require authentication
 router.use(authenticateToken);
 
-// GET /api/transactions - Get all transactions for the current user
+// Helper to construct date range query
+function buildDateFilter(from, to) {
+  const dateFilter = {};
+  if (from) {
+    const fromDate = new Date(from);
+    if (!isNaN(fromDate)) dateFilter.gte = fromDate;
+  }
+  if (to) {
+    const toDate = new Date(to);
+    if (!isNaN(toDate)) {
+      // If only date string was passed without time, include full end of day
+      if (to.length === 10) {
+        toDate.setHours(23, 59, 59, 999);
+      }
+      dateFilter.lte = toDate;
+    }
+  }
+  return Object.keys(dateFilter).length > 0 ? dateFilter : undefined;
+}
+
+// GET /api/transactions - Get transactions for current user with filtering
 router.get('/', async (req, res) => {
   try {
-    const { type, limit } = req.query;
+    const { type, limit, from, to } = req.query;
 
     const where = { userId: req.user.id };
     if (type) {
       where.type = type;
+    }
+
+    const dateFilter = buildDateFilter(from, to);
+    if (dateFilter) {
+      where.date = dateFilter;
     }
 
     const transactions = await prisma.transaction.findMany({
@@ -27,6 +52,88 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('Fetch transactions error:', error);
     res.status(500).json({ error: 'Failed to fetch transactions' });
+  }
+});
+
+// GET /api/transactions/stats - Calculate stats & breakdown for current user with optional date filtering
+router.get('/stats', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+
+    const where = { userId: req.user.id };
+    const dateFilter = buildDateFilter(from, to);
+    if (dateFilter) {
+      where.date = dateFilter;
+    }
+
+    const transactions = await prisma.transaction.findMany({
+      where
+    });
+
+    let totalIncome = 0;
+    let totalExpense = 0;
+    const categoryBreakdown = {};
+
+    transactions.forEach(t => {
+      if (t.type === 'income') {
+        totalIncome += t.amount;
+      } else if (t.type === 'expense') {
+        totalExpense += t.amount;
+        categoryBreakdown[t.category] = (categoryBreakdown[t.category] || 0) + t.amount;
+      }
+    });
+
+    const balance = totalIncome - totalExpense;
+
+    res.json({
+      totalIncome,
+      totalExpense,
+      balance,
+      transactionCount: transactions.length,
+      categoryBreakdown
+    });
+  } catch (error) {
+    console.error('Stats error:', error);
+    res.status(500).json({ error: 'Failed to calculate stats' });
+  }
+});
+
+// GET /api/transactions/export/csv - Export transactions to CSV file
+router.get('/export/csv', async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const where = { userId: req.user.id };
+    const dateFilter = buildDateFilter(from, to);
+    if (dateFilter) where.date = dateFilter;
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { currency: true }
+    });
+    const currency = user?.currency || 'PLN';
+
+    const transactions = await prisma.transaction.findMany({
+      where,
+      orderBy: { date: 'desc' }
+    });
+
+    // CSV Header with UTF-8 BOM so Excel displays Polish characters correctly
+    let csv = '\uFEFF';
+    csv += 'ID;Data;Typ;Kategoria;Kwota;Waluta;Komentarz\n';
+
+    transactions.forEach(t => {
+      const d = new Date(t.date).toISOString().replace('T', ' ').substring(0, 19);
+      const typ = t.type === 'expense' ? 'Wydatek' : 'Przychód';
+      const safeComment = (t.comment || '').replace(/"/g, '""');
+      csv += `${t.id};"${d}";"${typ}";"${t.category}";${t.amount.toFixed(2)};"${currency}";"${safeComment}"\n`;
+    });
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="LifeTrack_Transactions_${new Date().toISOString().substring(0,10)}.csv"`);
+    res.send(csv);
+  } catch (error) {
+    console.error('CSV export error:', error);
+    res.status(500).json({ error: 'Failed to export CSV' });
   }
 });
 
@@ -87,41 +194,6 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     console.error('Delete transaction error:', error);
     res.status(500).json({ error: 'Failed to delete transaction' });
-  }
-});
-
-// GET /api/transactions/stats - Summary & stats for charts and cards
-router.get('/stats', async (req, res) => {
-  try {
-    const transactions = await prisma.transaction.findMany({
-      where: { userId: req.user.id }
-    });
-
-    let totalIncome = 0;
-    let totalExpense = 0;
-    const categoryBreakdown = {};
-
-    transactions.forEach(t => {
-      if (t.type === 'income') {
-        totalIncome += t.amount;
-      } else if (t.type === 'expense') {
-        totalExpense += t.amount;
-        categoryBreakdown[t.category] = (categoryBreakdown[t.category] || 0) + t.amount;
-      }
-    });
-
-    const balance = totalIncome - totalExpense;
-
-    res.json({
-      totalIncome,
-      totalExpense,
-      balance,
-      transactionCount: transactions.length,
-      categoryBreakdown
-    });
-  } catch (error) {
-    console.error('Stats error:', error);
-    res.status(500).json({ error: 'Failed to calculate stats' });
   }
 });
 

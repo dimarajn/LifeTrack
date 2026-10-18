@@ -1,0 +1,69 @@
+.filterBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #17181f;
+  border: 1px solid #282a36;
+  border-radius: 12px;
+  padding: 12px 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.periodButtons {
+  display: flex;
+  background-color: #12131a;
+  padding: 3px;
+  border-radius: 8px;
+  gap: 2px;
+}
+
+.periodBtn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.periodBtn:hover {
+  color: #ffffff;
+}
+
+.periodBtnActive {
+  background-color: #3b82f6;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.exportBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #1f2937;
+  color: #60a5fa;
+  border: 1px solid #3b82f6;
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exportBtn:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.exportBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}

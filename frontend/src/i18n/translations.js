@@ -23,6 +23,14 @@ export const translations = {
     auth_error: "Błąd uwierzytelniania",
     demo_error: "Nie udało się zalogować na konto demo",
 
+    // Period Filter & Export
+    period_all: "Wszystko",
+    period_this_month: "Ten miesiąc",
+    period_last_30: "Ostatnie 30 dni",
+    period_this_year: "Ten rok",
+    btn_export_csv: "📥 Eksportuj (CSV)",
+    exporting: "Eksportowanie...",
+
     // Dashboard - Summary Cards
     card_balance: "Aktualne saldo",
     card_income: "Przychody łączne",
@@ -89,6 +97,14 @@ export const translations = {
     loading: "Loading...",
     auth_error: "Authentication error",
     demo_error: "Failed to log in with demo account",
+
+    // Period Filter & Export
+    period_all: "All Time",
+    period_this_month: "This Month",
+    period_last_30: "Last 30 Days",
+    period_this_year: "This Year",
+    btn_export_csv: "📥 Export (CSV)",
+    exporting: "Exporting...",
 
     // Dashboard - Summary Cards
     card_balance: "Current Balance",

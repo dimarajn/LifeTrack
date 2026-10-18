@@ -182,7 +182,9 @@ const swaggerSpec = {
         security: [{ bearerAuth: [] }],
         parameters: [
           { name: 'type', in: 'query', schema: { type: 'string', enum: ['income', 'expense'] }, description: 'Filtruj po typie' },
-          { name: 'limit', in: 'query', schema: { type: 'integer' }, description: 'Limit pobieranych rekordów' }
+          { name: 'limit', in: 'query', schema: { type: 'integer' }, description: 'Limit pobieranych rekordów' },
+          { name: 'from', in: 'query', schema: { type: 'string', format: 'date' }, description: 'Data początkowa (RRRR-MM-DD)' },
+          { name: 'to', in: 'query', schema: { type: 'string', format: 'date' }, description: 'Data końcowa (RRRR-MM-DD)' }
         ],
         responses: {
           200: {
@@ -207,6 +209,23 @@ const swaggerSpec = {
         }
       }
     },
+    '/api/transactions/export/csv': {
+      get: {
+        tags: ['Transakcje (Transactions)'],
+        summary: 'Eksport transakcji do pliku CSV z kodowaniem UTF-8 (Excel)',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'from', in: 'query', schema: { type: 'string', format: 'date' }, description: 'Data początkowa (RRRR-MM-DD)' },
+          { name: 'to', in: 'query', schema: { type: 'string', format: 'date' }, description: 'Data końcowa (RRRR-MM-DD)' }
+        ],
+        responses: {
+          200: {
+            description: 'Plik CSV do pobrania',
+            content: { 'text/csv': { schema: { type: 'string', format: 'binary' } } }
+          }
+        }
+      }
+    },
     '/api/transactions/{id}': {
       delete: {
         tags: ['Transakcje (Transactions)'],
@@ -226,6 +245,10 @@ const swaggerSpec = {
         tags: ['Transakcje (Transactions)'],
         summary: 'Statystyki finansowe, bilans oraz struktura wydatków na wykres',
         security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'from', in: 'query', schema: { type: 'string', format: 'date' }, description: 'Data początkowa (RRRR-MM-DD)' },
+          { name: 'to', in: 'query', schema: { type: 'string', format: 'date' }, description: 'Data końcowa (RRRR-MM-DD)' }
+        ],
         responses: {
           200: {
             description: 'Podsumowanie bilansu i struktura kategorii',

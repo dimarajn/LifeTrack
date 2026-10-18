@@ -41,7 +41,25 @@ export const api = {
   getTransactions: (params = '') => apiRequest(`/transactions${params ? `?${params}` : ''}`),
   createTransaction: (tx) => apiRequest('/transactions', { method: 'POST', body: tx }),
   deleteTransaction: (id) => apiRequest(`/transactions/${id}`, { method: 'DELETE' }),
-  getStats: () => apiRequest('/transactions/stats'),
+  getStats: (params = '') => apiRequest(`/transactions/stats${params ? `?${params}` : ''}`),
+
+  // CSV Export
+  downloadCsv: async (params = '') => {
+    const token = localStorage.getItem('lifetrack_token');
+    const res = await fetch(`${API_BASE_URL}/transactions/export/csv${params ? `?${params}` : ''}`, {
+      headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+    });
+    if (!res.ok) throw new Error('Failed to export CSV');
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `LifeTrack_Transactions_${new Date().toISOString().substring(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  },
 
   // Categories
   getCategories: () => apiRequest('/categories'),
