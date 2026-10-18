@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import styles from './App.module.css';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { api } from './api/client';
 import Navbar from './components/Navbar/Navbar';
 import AuthModal from './components/Auth/AuthModal';
@@ -12,7 +13,8 @@ import CategoryModal from './components/Categories/CategoryModal';
 
 function MainApp() {
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const [serverMessage, setServerMessage] = useState('Checking connection...');
+  const { t } = useLanguage();
+  const [serverMessage, setServerMessage] = useState('');
   const [transactions, setTransactions] = useState([]);
   const [stats, setStats] = useState(null);
   const [categories, setCategories] = useState({ income: [], expense: [] });
@@ -23,8 +25,8 @@ function MainApp() {
   useEffect(() => {
     api.getStatus()
       .then(res => setServerMessage(res.message))
-      .catch(() => setServerMessage('Backend Offline 🔴'));
-  }, []);
+      .catch(() => setServerMessage(t('server_offline')));
+  }, [t]);
 
   // Fetch user transactions, stats, and categories
   const loadDashboardData = useCallback(async () => {
@@ -56,7 +58,6 @@ function MainApp() {
   };
 
   const handleDeleteTransaction = async (id) => {
-    if (!window.confirm('Точно удалить эту операцию?')) return;
     await api.deleteTransaction(id);
     await loadDashboardData();
   };
@@ -74,7 +75,7 @@ function MainApp() {
   };
 
   if (authLoading) {
-    return <div className={styles.loadingSpinner}>Загрузка LifeTrack...</div>;
+    return <div className={styles.loadingSpinner}>{t('loading_app')}</div>;
   }
 
   return (
@@ -119,8 +120,10 @@ function MainApp() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <MainApp />
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <MainApp />
+      </AuthProvider>
+    </LanguageProvider>
   );
 }

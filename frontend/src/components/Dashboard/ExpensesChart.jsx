@@ -1,6 +1,7 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import styles from './ExpensesChart.module.css';
+import { useLanguage } from '../../context/LanguageContext';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -10,6 +11,7 @@ const FALLBACK_PALETTE = [
 ];
 
 export default function ExpensesChart({ categoryBreakdown, categories }) {
+  const { t } = useLanguage();
   const categoryNames = categoryBreakdown ? Object.keys(categoryBreakdown) : [];
   const amounts = categoryBreakdown ? Object.values(categoryBreakdown) : [];
 
@@ -63,14 +65,14 @@ export default function ExpensesChart({ categoryBreakdown, categories }) {
 
   return (
     <div className={styles.chartCard}>
-      <h3 className={styles.title}>Расходы по категориям</h3>
+      <h3 className={styles.title}>{t('chart_title')}</h3>
       <div className={styles.chartWrapper}>
         {hasData ? (
           <Doughnut data={chartData} options={chartOptions} />
         ) : (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>📉</span>
-            <p>Нет расходов для отображения графика.<br />Добавьте первую операцию выше!</p>
+            <p style={{ whiteSpace: 'pre-line' }}>{t('chart_empty')}</p>
           </div>
         )}
       </div>

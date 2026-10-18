@@ -1,8 +1,10 @@
 import styles from './Navbar.module.css';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function Navbar({ serverMessage }) {
   const { user, logout } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <header className={styles.header}>
@@ -12,12 +14,32 @@ export default function Navbar({ serverMessage }) {
           <h1 className={styles.title}>LifeTrack</h1>
           <div className={styles.serverBadge}>
             <span className={styles.statusDot}></span>
-            <span>{serverMessage || 'Server Online'}</span>
+            <span>{serverMessage || t('server_online')}</span>
           </div>
         </div>
       </div>
 
       <div className={styles.actions}>
+        {/* Language Switcher */}
+        <div className={styles.langSwitch}>
+          <button
+            type="button"
+            className={`${styles.langBtn} ${language === 'pl' ? styles.langBtnActive : ''}`}
+            onClick={() => setLanguage('pl')}
+            title="Polski"
+          >
+            🇵🇱 PL
+          </button>
+          <button
+            type="button"
+            className={`${styles.langBtn} ${language === 'en' ? styles.langBtnActive : ''}`}
+            onClick={() => setLanguage('en')}
+            title="English"
+          >
+            🇬🇧 EN
+          </button>
+        </div>
+
         {user && (
           <>
             <div className={styles.userInfo}>
@@ -25,7 +47,7 @@ export default function Navbar({ serverMessage }) {
               <span className={styles.currencyBadge}>{user.currency || 'PLN'}</span>
             </div>
             <button className={styles.logoutBtn} onClick={logout}>
-              Выйти
+              {t('logout')}
             </button>
           </>
         )}

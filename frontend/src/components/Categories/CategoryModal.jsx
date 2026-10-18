@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from './CategoryModal.module.css';
+import { useLanguage } from '../../context/LanguageContext';
 
 const PRESET_COLORS = [
   '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
@@ -8,6 +9,7 @@ const PRESET_COLORS = [
 ];
 
 export default function CategoryModal({ isOpen, onClose, categories, onAddCategory, onDeleteCategory }) {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('expense'); // 'expense' | 'income'
   const [newCatName, setNewCatName] = useState('');
   const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[0]);
@@ -34,7 +36,7 @@ export default function CategoryModal({ isOpen, onClose, categories, onAddCatego
       });
       setNewCatName('');
     } catch (err) {
-      setError(err.message || 'Ошибка создания категории');
+      setError(err.message || t('cat_create_error'));
     } finally {
       setLoading(false);
     }
@@ -42,12 +44,12 @@ export default function CategoryModal({ isOpen, onClose, categories, onAddCatego
 
   const handleDelete = async (cat) => {
     if (cat.isDefault) return;
-    if (!window.confirm(`Удалить категорию "${cat.name}"?`)) return;
+    if (!window.confirm(`${t('cat_delete_confirm')} "${cat.name}"?`)) return;
 
     try {
       await onDeleteCategory(cat.id);
     } catch (err) {
-      setError(err.message || 'Ошибка удаления категории');
+      setError(err.message || t('cat_delete_error'));
     }
   };
 
@@ -55,7 +57,7 @@ export default function CategoryModal({ isOpen, onClose, categories, onAddCatego
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h3 className={styles.title}>🏷️ Управление категориями</h3>
+          <h3 className={styles.title}>{t('cat_modal_title')}</h3>
           <button className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
 
@@ -65,13 +67,13 @@ export default function CategoryModal({ isOpen, onClose, categories, onAddCatego
               className={`${styles.tabBtn} ${activeTab === 'expense' ? styles.tabBtnActive : ''}`}
               onClick={() => { setActiveTab('expense'); setError(''); }}
             >
-              Категории расходов
+              {t('cat_tab_expense')}
             </button>
             <button
               className={`${styles.tabBtn} ${activeTab === 'income' ? styles.tabBtnActive : ''}`}
               onClick={() => { setActiveTab('income'); setError(''); }}
             >
-              Категории доходов
+              {t('cat_tab_income')}
             </button>
           </div>
 
@@ -83,7 +85,7 @@ export default function CategoryModal({ isOpen, onClose, categories, onAddCatego
               <input
                 className={styles.nameInput}
                 type="text"
-                placeholder="Новая категория (напр. Спорт, Кафе...)"
+                placeholder={t('cat_name_placeholder')}
                 value={newCatName}
                 onChange={(e) => setNewCatName(e.target.value)}
                 required
@@ -94,11 +96,11 @@ export default function CategoryModal({ isOpen, onClose, categories, onAddCatego
                   type="color"
                   value={selectedColor}
                   onChange={(e) => setSelectedColor(e.target.value)}
-                  title="Выбрать свой цвет"
+                  title={t('cat_color_tooltip')}
                 />
               </div>
               <button className={styles.addBtn} type="submit" disabled={loading}>
-                {loading ? '...' : '+ Добавить'}
+                {loading ? '...' : t('cat_add_btn')}
               </button>
             </div>
 
@@ -128,12 +130,12 @@ export default function CategoryModal({ isOpen, onClose, categories, onAddCatego
 
                 <div>
                   {cat.isDefault ? (
-                    <span className={styles.categoryBadge}>Базовая</span>
+                    <span className={styles.categoryBadge}>{t('cat_badge_default')}</span>
                   ) : (
                     <button
                       className={styles.deleteBtn}
                       onClick={() => handleDelete(cat)}
-                      title="Удалить свою категорию"
+                      title={t('cat_delete_tooltip')}
                     >
                       🗑️
                     </button>

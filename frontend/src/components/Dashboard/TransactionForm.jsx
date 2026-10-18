@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import styles from './TransactionForm.module.css';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function TransactionForm({ categories, onAddTransaction, onOpenCategories }) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const currency = user?.currency || 'PLN';
 
   const [type, setType] = useState('expense');
@@ -46,13 +48,13 @@ export default function TransactionForm({ categories, onAddTransaction, onOpenCa
   return (
     <div className={styles.formContainer}>
       <div className={styles.headerRow}>
-        <h3 className={styles.heading}>➕ Добавить операцию</h3>
+        <h3 className={styles.heading}>{t('form_heading')}</h3>
         <button
           type="button"
           className={styles.manageCatBtn}
           onClick={onOpenCategories}
         >
-          🏷️ Управление категориями
+          {t('btn_manage_categories')}
         </button>
       </div>
 
@@ -70,15 +72,15 @@ export default function TransactionForm({ categories, onAddTransaction, onOpenCa
             }
           }}
         >
-          <option value="expense">Расход (-)</option>
-          <option value="income">Доход (+)</option>
+          <option value="expense">{t('type_expense')}</option>
+          <option value="income">{t('type_income')}</option>
         </select>
 
         <input
           className={`${styles.input} ${styles.amountInput}`}
           type="number"
           step="0.01"
-          placeholder={`Сумма (${currency})`}
+          placeholder={`${t('amount_placeholder')} (${currency})`}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           required
@@ -99,13 +101,13 @@ export default function TransactionForm({ categories, onAddTransaction, onOpenCa
         <input
           className={`${styles.input} ${styles.commentInput}`}
           type="text"
-          placeholder="Комментарий (напр. Обед, бензин, аванс...)"
+          placeholder={t('comment_placeholder')}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
 
         <button className={styles.submitBtn} type="submit" disabled={submitting}>
-          {submitting ? '...' : 'Добавить'}
+          {submitting ? '...' : t('btn_add_transaction')}
         </button>
       </form>
     </div>

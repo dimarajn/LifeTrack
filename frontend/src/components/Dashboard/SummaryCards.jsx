@@ -1,8 +1,10 @@
 import styles from './SummaryCards.module.css';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function SummaryCards({ stats }) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const currency = user?.currency || 'PLN';
 
   const balance = stats?.balance ?? 0;
@@ -13,7 +15,7 @@ export default function SummaryCards({ stats }) {
     <div className={styles.cardsGrid}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <span className={styles.title}>Текущий баланс</span>
+          <span className={styles.title}>{t('card_balance')}</span>
           <span className={styles.icon}>💰</span>
         </div>
         <div className={`${styles.value} ${balance >= 0 ? styles.positive : styles.negative}`}>
@@ -23,7 +25,7 @@ export default function SummaryCards({ stats }) {
 
       <div className={styles.card}>
         <div className={styles.header}>
-          <span className={styles.title}>Всего доходов</span>
+          <span className={styles.title}>{t('card_income')}</span>
           <span className={styles.icon}>📈</span>
         </div>
         <div className={`${styles.value} ${styles.incomeValue}`}>
@@ -33,7 +35,7 @@ export default function SummaryCards({ stats }) {
 
       <div className={styles.card}>
         <div className={styles.header}>
-          <span className={styles.title}>Всего расходов</span>
+          <span className={styles.title}>{t('card_expense')}</span>
           <span className={styles.icon}>📉</span>
         </div>
         <div className={`${styles.value} ${styles.expenseValue}`}>

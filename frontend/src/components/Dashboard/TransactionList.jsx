@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import styles from './TransactionList.module.css';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function TransactionList({ transactions, onDeleteTransaction }) {
   const { user } = useAuth();
+  const { language, t } = useLanguage();
   const currency = user?.currency || 'PLN';
   const [filter, setFilter] = useState('all'); // 'all', 'expense', 'income'
 
@@ -15,7 +17,8 @@ export default function TransactionList({ transactions, onDeleteTransaction }) {
   const formatDate = (dateStr) => {
     try {
       const d = new Date(dateStr);
-      return d.toLocaleDateString('ru-RU', {
+      const locale = language === 'pl' ? 'pl-PL' : 'en-US';
+      return d.toLocaleDateString(locale, {
         day: '2-digit',
         month: 'short',
         hour: '2-digit',
@@ -26,54 +29,60 @@ export default function TransactionList({ transactions, onDeleteTransaction }) {
     }
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm(t('delete_tx_confirm'))) {
+      onDeleteTransaction(id);
+    }
+  };
+
   return (
     <div className={styles.listCard}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Последние операции</h3>
+        <h3 className={styles.title}>{t('list_title')}</h3>
         <div className={styles.filterGroup}>
           <button
             className={`${styles.filterBtn} ${filter === 'all' ? styles.filterBtnActive : ''}`}
             onClick={() => setFilter('all')}
           >
-            Все
+            {t('filter_all')}
           </button>
           <button
             className={`${styles.filterBtn} ${filter === 'expense' ? styles.filterBtnActive : ''}`}
             onClick={() => setFilter('expense')}
           >
-            Расходы
+            {t('filter_expenses')}
           </button>
           <button
             className={`${styles.filterBtn} ${filter === 'income' ? styles.filterBtnActive : ''}`}
             onClick={() => setFilter('income')}
           >
-            Доходы
+            {t('filter_incomes')}
           </button>
         </div>
       </div>
 
       {filtered.length === 0 ? (
         <div className={styles.emptyState}>
-          Операций пока нет
+          {t('list_empty')}
         </div>
       ) : (
         <ul className={styles.list}>
-          {filtered.map((t) => (
-            <li key={t.id} className={styles.item}>
+          {filtered.map((item) => (
+            <li key={item.id} className={styles.item}>
               <div className={styles.itemLeft}>
-                <span className={styles.categoryTag}>{t.category}</span>
-                {t.comment && <span className={styles.comment}>{t.comment}</span>}
-                <span className={styles.date}>{formatDate(t.date || t.createdAt)}</span>
+                <span className={styles.categoryTag}>{item.category}</span>
+                {item.comment && <span className={styles.comment}>{item.comment}</span>}
+                <span className={styles.date}>{formatDate(item.date || item.createdAt)}</span>
               </div>
 
               <div className={styles.itemRight}>
-                <span className={`${styles.amount} ${t.type === 'expense' ? styles.expenseAmount : styles.incomeAmount}`}>
-                  {t.type === 'expense' ? '-' : '+'}{Number(t.amount).toFixed(2)} {currency}
+                <span className={`${styles.amount} ${item.type === 'expense' ? styles.expenseAmount : styles.incomeAmount}`}>
+                  {item.type === 'expense' ? '-' : '+'}{Number(item.amount).toFixed(2)} {currency}
                 </span>
                 <button
                   className={styles.deleteBtn}
-                  onClick={() => onDeleteTransaction(t.id)}
-                  title="Удалить запись"
+                  onClick={() => handleDelete(item.id)}
+                  title={t('delete_tx_tooltip')}
                 >
                   🗑️
                 </button>

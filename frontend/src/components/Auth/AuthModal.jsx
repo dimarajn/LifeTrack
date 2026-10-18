@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import styles from './AuthModal.module.css';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function AuthModal() {
   const { login, register } = useAuth();
+  const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(true);
   
   const [email, setEmail] = useState('');
@@ -26,7 +28,7 @@ export default function AuthModal() {
         await register(email, password, name, currency);
       }
     } catch (err) {
-      setError(err.message || 'Ошибка аутентификации');
+      setError(err.message || t('auth_error'));
     } finally {
       setLoading(false);
     }
@@ -38,7 +40,7 @@ export default function AuthModal() {
     try {
       await login('demo@lifetrack.app', 'password123');
     } catch (err) {
-      setError(err.message || 'Не удалось войти под демо-аккаунтом');
+      setError(err.message || t('demo_error'));
     } finally {
       setLoading(false);
     }
@@ -46,8 +48,8 @@ export default function AuthModal() {
 
   return (
     <div className={styles.authContainer}>
-      <h2 className={styles.title}>LifeTrack</h2>
-      <p className={styles.subtitle}>Система учета личных финансов</p>
+      <h2 className={styles.title}>{t('auth_title')}</h2>
+      <p className={styles.subtitle}>{t('auth_subtitle')}</p>
 
       <div className={styles.tabButtons}>
         <button
@@ -55,14 +57,14 @@ export default function AuthModal() {
           onClick={() => { setIsLogin(true); setError(''); }}
           type="button"
         >
-          Вход
+          {t('tab_login')}
         </button>
         <button
           className={`${styles.tabBtn} ${!isLogin ? styles.tabBtnActive : ''}`}
           onClick={() => { setIsLogin(false); setError(''); }}
           type="button"
         >
-          Регистрация
+          {t('tab_register')}
         </button>
       </div>
 
@@ -72,34 +74,34 @@ export default function AuthModal() {
         {!isLogin && (
           <>
             <div className={styles.inputGroup}>
-              <label className={styles.label}>Ваше имя</label>
+              <label className={styles.label}>{t('your_name')}</label>
               <input
                 className={styles.input}
                 type="text"
-                placeholder="Дмитрий"
+                placeholder={t('name_placeholder')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
 
             <div className={styles.inputGroup}>
-              <label className={styles.label}>Основная валюта</label>
+              <label className={styles.label}>{t('main_currency')}</label>
               <select
                 className={styles.input}
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
               >
                 <option value="PLN">PLN (zł)</option>
-                <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
-                <option value="UAH">UAH (₴)</option>
+                <option value="USD">USD ($)</option>
+                <option value="GBP">GBP (£)</option>
               </select>
             </div>
           </>
         )}
 
         <div className={styles.inputGroup}>
-          <label className={styles.label}>Email</label>
+          <label className={styles.label}>{t('email')}</label>
           <input
             className={styles.input}
             type="email"
@@ -111,7 +113,7 @@ export default function AuthModal() {
         </div>
 
         <div className={styles.inputGroup}>
-          <label className={styles.label}>Пароль</label>
+          <label className={styles.label}>{t('password')}</label>
           <input
             className={styles.input}
             type="password"
@@ -123,12 +125,12 @@ export default function AuthModal() {
         </div>
 
         <button className={styles.submitBtn} type="submit" disabled={loading}>
-          {loading ? 'Загрузка...' : isLogin ? 'Войти в аккаунт' : 'Зарегистрироваться'}
+          {loading ? t('loading') : isLogin ? t('btn_login') : t('btn_register')}
         </button>
       </form>
 
       <button className={styles.demoBtn} type="button" onClick={handleDemoLogin} disabled={loading}>
-        ⚡ Быстрый вход (Тестовый аккаунт)
+        {t('demo_login')}
       </button>
     </div>
   );

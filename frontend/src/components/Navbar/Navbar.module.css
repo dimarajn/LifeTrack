@@ -54,7 +54,40 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+}
+
+.langSwitch {
+  display: flex;
+  background-color: #12131a;
+  border: 1px solid #2d303f;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.langBtn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.langBtn:hover {
+  color: #ffffff;
+}
+
+.langBtnActive {
+  background-color: #3b82f6;
+  color: #ffffff !important;
 }
 
 .userInfo {
