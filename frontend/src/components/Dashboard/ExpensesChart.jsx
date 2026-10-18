@@ -1,26 +1,40 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Doughnut, Pie } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import styles from './ExpensesChart.module.css';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const PALETTE = [
+const FALLBACK_PALETTE = [
   '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
   '#9966FF', '#FF9F40', '#10B981', '#EC4899', '#6366F1'
 ];
 
-export default function ExpensesChart({ categoryBreakdown }) {
-  const categories = categoryBreakdown ? Object.keys(categoryBreakdown) : [];
+export default function ExpensesChart({ categoryBreakdown, categories }) {
+  const categoryNames = categoryBreakdown ? Object.keys(categoryBreakdown) : [];
   const amounts = categoryBreakdown ? Object.values(categoryBreakdown) : [];
 
-  const hasData = categories.length > 0 && amounts.some(v => v > 0);
+  const hasData = categoryNames.length > 0 && amounts.some(v => v > 0);
+
+  // Map each category to its defined color (or fallback palette)
+  const colorMap = {};
+  if (categories?.expense) {
+    categories.expense.forEach(c => {
+      if (c.name && c.color) {
+        colorMap[c.name.toLowerCase()] = c.color;
+      }
+    });
+  }
+
+  const backgroundColors = categoryNames.map((cat, idx) => {
+    return colorMap[cat.toLowerCase()] || FALLBACK_PALETTE[idx % FALLBACK_PALETTE.length];
+  });
 
   const chartData = {
-    labels: categories,
+    labels: categoryNames,
     datasets: [
       {
         data: amounts,
-        backgroundColor: PALETTE.slice(0, categories.length),
+        backgroundColor: backgroundColors,
         borderColor: '#17181f',
         borderWidth: 2,
       },

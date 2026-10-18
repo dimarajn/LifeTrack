@@ -45,4 +45,6 @@ export const api = {
 
   // Categories
   getCategories: () => apiRequest('/categories'),
+  createCategory: (cat) => apiRequest('/categories', { method: 'POST', body: cat }),
+  deleteCategory: (id) => apiRequest(`/categories/${id}`, { method: 'DELETE' }),
 };

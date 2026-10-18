@@ -1,20 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './TransactionForm.module.css';
 import { useAuth } from '../../context/AuthContext';
 
-export default function TransactionForm({ categories, onAddTransaction }) {
+export default function TransactionForm({ categories, onAddTransaction, onOpenCategories }) {
   const { user } = useAuth();
   const currency = user?.currency || 'PLN';
 
   const [type, setType] = useState('expense');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('Food');
+  const [category, setCategory] = useState('');
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const availableCategories = type === 'expense'
-    ? categories?.expense || ['Food', 'Transport', 'Rent', 'Entertainment', 'Health', 'Other']
-    : categories?.income || ['Salary', 'Freelance', 'Gift', 'Investments', 'Other'];
+  const rawList = type === 'expense'
+    ? categories?.expense || []
+    : categories?.income || [];
+
+  const availableCategories = rawList.map(c => typeof c === 'object' ? c.name : c);
+
+  useEffect(() => {
+    if (availableCategories.length > 0 && (!category || !availableCategories.includes(category))) {
+      setCategory(availableCategories[0]);
+    }
+  }, [availableCategories, category]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +33,7 @@ export default function TransactionForm({ categories, onAddTransaction }) {
       await onAddTransaction({
         type,
         amount: Number(amount),
-        category: category || availableCategories[0],
+        category: category || availableCategories[0] || 'Other',
         comment
       });
       setAmount('');
@@ -37,7 +45,17 @@ export default function TransactionForm({ categories, onAddTransaction }) {
 
   return (
     <div className={styles.formContainer}>
-      <h3 className={styles.heading}>➕ Добавить операцию</h3>
+      <div className={styles.headerRow}>
+        <h3 className={styles.heading}>➕ Добавить операцию</h3>
+        <button
+          type="button"
+          className={styles.manageCatBtn}
+          onClick={onOpenCategories}
+        >
+          🏷️ Управление категориями
+        </button>
+      </div>
+
       <form className={styles.form} onSubmit={handleSubmit}>
         <select
           className={`${styles.select} ${styles.typeSelect}`}
@@ -45,8 +63,11 @@ export default function TransactionForm({ categories, onAddTransaction }) {
           onChange={(e) => {
             const newType = e.target.value;
             setType(newType);
-            const nextCats = newType === 'expense' ? categories?.expense : categories?.income;
-            if (nextCats && nextCats.length > 0) setCategory(nextCats[0]);
+            const nextList = newType === 'expense' ? categories?.expense : categories?.income;
+            if (nextList && nextList.length > 0) {
+              const first = typeof nextList[0] === 'object' ? nextList[0].name : nextList[0];
+              setCategory(first);
+            }
           }}
         >
           <option value="expense">Расход (-)</option>
@@ -78,7 +99,7 @@ export default function TransactionForm({ categories, onAddTransaction }) {
         <input
           className={`${styles.input} ${styles.commentInput}`}
           type="text"
-          placeholder="Комментарий (напр. Обед в кафе, зарплата...)"
+          placeholder="Комментарий (напр. Обед, бензин, аванс...)"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />

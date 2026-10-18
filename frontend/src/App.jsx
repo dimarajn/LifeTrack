@@ -8,6 +8,7 @@ import SummaryCards from './components/Dashboard/SummaryCards';
 import TransactionForm from './components/Dashboard/TransactionForm';
 import ExpensesChart from './components/Dashboard/ExpensesChart';
 import TransactionList from './components/Dashboard/TransactionList';
+import CategoryModal from './components/Categories/CategoryModal';
 
 function MainApp() {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -15,6 +16,7 @@ function MainApp() {
   const [transactions, setTransactions] = useState([]);
   const [stats, setStats] = useState(null);
   const [categories, setCategories] = useState({ income: [], expense: [] });
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
 
   // Check backend server status
@@ -59,6 +61,18 @@ function MainApp() {
     await loadDashboardData();
   };
 
+  const handleAddCategory = async (newCat) => {
+    await api.createCategory(newCat);
+    const updatedCategories = await api.getCategories();
+    setCategories(updatedCategories);
+  };
+
+  const handleDeleteCategory = async (id) => {
+    await api.deleteCategory(id);
+    const updatedCategories = await api.getCategories();
+    setCategories(updatedCategories);
+  };
+
   if (authLoading) {
     return <div className={styles.loadingSpinner}>Загрузка LifeTrack...</div>;
   }
@@ -76,15 +90,27 @@ function MainApp() {
           <TransactionForm 
             categories={categories} 
             onAddTransaction={handleAddTransaction} 
+            onOpenCategories={() => setIsCategoryModalOpen(true)}
           />
 
           <div className={styles.dashboardGrid}>
-            <ExpensesChart categoryBreakdown={stats?.categoryBreakdown} />
+            <ExpensesChart 
+              categoryBreakdown={stats?.categoryBreakdown} 
+              categories={categories}
+            />
             <TransactionList 
               transactions={transactions} 
               onDeleteTransaction={handleDeleteTransaction} 
             />
           </div>
+
+          <CategoryModal
+            isOpen={isCategoryModalOpen}
+            onClose={() => setIsCategoryModalOpen(false)}
+            categories={categories}
+            onAddCategory={handleAddCategory}
+            onDeleteCategory={handleDeleteCategory}
+          />
         </>
       )}
     </div>
