@@ -57,6 +57,27 @@
   gap: 14px;
 }
 
+.docsLink {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #21232d;
+  color: #a78bfa;
+  border: 1px solid #374151;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.docsLink:hover {
+  background-color: #2d303f;
+  border-color: #a78bfa;
+  color: #c4b5fd;
+}
+
 .langSwitch {
   display: flex;
   background-color: #12131a;

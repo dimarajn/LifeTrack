@@ -20,6 +20,17 @@ export default function Navbar({ serverMessage }) {
       </div>
 
       <div className={styles.actions}>
+        {/* Swagger Documentation Link */}
+        <a
+          href="http://localhost:5000/api/docs"
+          target="_blank"
+          rel="noreferrer"
+          className={styles.docsLink}
+          title="Open Swagger OpenAPI Documentation"
+        >
+          📖 Swagger API
+        </a>
+
         {/* Language Switcher */}
         <div className={styles.langSwitch}>
           <button
