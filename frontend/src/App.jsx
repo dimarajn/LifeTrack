@@ -12,31 +12,45 @@ import ExpensesChart from './components/Dashboard/ExpensesChart';
 import TransactionList from './components/Dashboard/TransactionList';
 import CategoryModal from './components/Categories/CategoryModal';
 
-// Helper to compute ISO date ranges for filters
-function calculateDateRange(period) {
+// Helper to compute date ranges for filters
+function calculateDateRange(period, customDates) {
   const now = new Date();
-  const to = now.toISOString().split('T')[0];
+  const todayStr = now.toISOString().split('T')[0];
+
+  if (period === 'day') {
+    const day = customDates?.from || todayStr;
+    return { from: day, to: day };
+  }
+
+  if (period === 'this_week') {
+    const dayOfWeek = now.getDay() || 7; // 1 = Monday, 7 = Sunday
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - dayOfWeek + 1);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    return {
+      from: monday.toISOString().split('T')[0],
+      to: sunday.toISOString().split('T')[0]
+    };
+  }
 
   if (period === 'this_month') {
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const from = firstDay.toISOString().split('T')[0];
-    return { from, to };
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return {
+      from: firstDay.toISOString().split('T')[0],
+      to: lastDay.toISOString().split('T')[0]
+    };
   }
 
-  if (period === 'last_30') {
-    const past = new Date();
-    past.setDate(past.getDate() - 30);
-    const from = past.toISOString().split('T')[0];
-    return { from, to };
+  if (period === 'custom_range') {
+    return {
+      from: customDates?.from || todayStr,
+      to: customDates?.to || todayStr
+    };
   }
 
-  if (period === 'this_year') {
-    const firstDayYear = new Date(now.getFullYear(), 0, 1);
-    const from = firstDayYear.toISOString().split('T')[0];
-    return { from, to };
-  }
-
-  return { from: null, to: null };
+  return { from: null, to: null }; // 'all'
 }
 
 function MainApp() {
@@ -46,7 +60,11 @@ function MainApp() {
   const [transactions, setTransactions] = useState([]);
   const [stats, setStats] = useState(null);
   const [categories, setCategories] = useState({ income: [], expense: [] });
-  const [selectedPeriod, setSelectedPeriod] = useState('all');
+  
+  // Default to 'this_month' (Current month)
+  const [selectedPeriod, setSelectedPeriod] = useState('this_month');
+  const [activeRange, setActiveRange] = useState(() => calculateDateRange('this_month'));
+  
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -57,14 +75,13 @@ function MainApp() {
       .catch(() => setServerMessage(t('server_offline')));
   }, [t]);
 
-  // Fetch transactions and stats based on selected date period
-  const loadDashboardData = useCallback(async (period = selectedPeriod) => {
+  // Fetch transactions and stats for the active date range
+  const loadDashboardData = useCallback(async (range = activeRange) => {
     if (!isAuthenticated) return;
     try {
-      const { from, to } = calculateDateRange(period);
       const queryParams = new URLSearchParams();
-      if (from) queryParams.append('from', from);
-      if (to) queryParams.append('to', to);
+      if (range.from) queryParams.append('from', range.from);
+      if (range.to) queryParams.append('to', range.to);
       const queryString = queryParams.toString();
 
       const [txList, statsData, catsData] = await Promise.all([
@@ -78,34 +95,35 @@ function MainApp() {
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
     }
-  }, [isAuthenticated, selectedPeriod]);
+  }, [isAuthenticated, activeRange]);
 
   useEffect(() => {
-    loadDashboardData(selectedPeriod);
-  }, [loadDashboardData, selectedPeriod]);
+    loadDashboardData(activeRange);
+  }, [loadDashboardData, activeRange]);
 
-  const handlePeriodChange = (period) => {
+  const handlePeriodChange = (period, customDates) => {
+    const range = calculateDateRange(period, customDates);
     setSelectedPeriod(period);
-    loadDashboardData(period);
+    setActiveRange(range);
+    loadDashboardData(range);
   };
 
   const handleAddTransaction = async (newTx) => {
     await api.createTransaction(newTx);
-    await loadDashboardData(selectedPeriod);
+    await loadDashboardData(activeRange);
   };
 
   const handleDeleteTransaction = async (id) => {
     await api.deleteTransaction(id);
-    await loadDashboardData(selectedPeriod);
+    await loadDashboardData(activeRange);
   };
 
   const handleExportCsv = async () => {
     setIsExporting(true);
     try {
-      const { from, to } = calculateDateRange(selectedPeriod);
       const queryParams = new URLSearchParams();
-      if (from) queryParams.append('from', from);
-      if (to) queryParams.append('to', to);
+      if (activeRange.from) queryParams.append('from', activeRange.from);
+      if (activeRange.to) queryParams.append('to', activeRange.to);
       await api.downloadCsv(queryParams.toString());
     } catch (err) {
       console.error('Failed to export CSV:', err);

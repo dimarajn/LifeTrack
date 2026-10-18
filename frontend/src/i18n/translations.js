@@ -24,10 +24,15 @@ export const translations = {
     demo_error: "Nie udało się zalogować na konto demo",
 
     // Period Filter & Export
-    period_all: "Wszystko",
     period_this_month: "Ten miesiąc",
-    period_last_30: "Ostatnie 30 dni",
-    period_this_year: "Ten rok",
+    period_this_week: "Ten tydzień",
+    period_single_day: "Dzień",
+    period_custom_range: "Własny okres",
+    period_all: "Wszystko",
+    from_date: "Od",
+    to_date: "Do",
+    select_day: "Dzień",
+    apply_filter: "Zastosuj",
     btn_export_csv: "📥 Eksportuj (CSV)",
     exporting: "Eksportowanie...",
 
@@ -99,10 +104,15 @@ export const translations = {
     demo_error: "Failed to log in with demo account",
 
     // Period Filter & Export
-    period_all: "All Time",
     period_this_month: "This Month",
-    period_last_30: "Last 30 Days",
-    period_this_year: "This Year",
+    period_this_week: "This Week",
+    period_single_day: "Day",
+    period_custom_range: "Custom Range",
+    period_all: "All Time",
+    from_date: "From",
+    to_date: "To",
+    select_day: "Day",
+    apply_filter: "Apply",
     btn_export_csv: "📥 Export (CSV)",
     exporting: "Exporting...",
 

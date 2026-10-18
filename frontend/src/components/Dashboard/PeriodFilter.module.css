@@ -1,12 +1,18 @@
-.filterBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.filterContainer {
   background-color: #17181f;
   border: 1px solid #282a36;
   border-radius: 12px;
-  padding: 12px 20px;
+  padding: 14px 20px;
   margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mainBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -17,18 +23,20 @@
   padding: 3px;
   border-radius: 8px;
   gap: 2px;
+  flex-wrap: wrap;
 }
 
 .periodBtn {
   background: transparent;
   border: none;
   color: #9ca3af;
-  padding: 6px 14px;
+  padding: 7px 14px;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .periodBtn:hover {
@@ -37,7 +45,7 @@
 
 .periodBtnActive {
   background-color: #3b82f6;
-  color: #ffffff;
+  color: #ffffff !important;
   font-weight: 600;
 }
 
@@ -54,6 +62,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .exportBtn:hover {
@@ -66,4 +75,54 @@
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.subControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #1f202b;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #2d303f;
+  flex-wrap: wrap;
+}
+
+.dateGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #d1d5db;
+}
+
+.dateInput {
+  background-color: #12131a;
+  border: 1px solid #374151;
+  color: #ffffff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  color-scheme: dark;
+}
+
+.dateInput:focus {
+  border-color: #3b82f6;
+}
+
+.applyBtn {
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.applyBtn:hover {
+  background-color: #2563eb;
 }
