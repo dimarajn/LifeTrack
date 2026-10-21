@@ -5,8 +5,7 @@ import { useLanguage } from '../../context/LanguageContext';
 export default function PeriodFilter({
   selectedPeriod,
   onSelectPeriod,
-  onExport,
-  isExporting
+  onOpenNewTransaction
 }) {
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +20,6 @@ export default function PeriodFilter({
   });
   const [rangeTo, setRangeTo] = useState(todayStr);
 
-  // Close popup when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -51,122 +49,141 @@ export default function PeriodFilter({
     }
   };
 
-  // Label displayed on the main button
   const getButtonLabel = () => {
     switch (selectedPeriod) {
       case 'this_month':
-        return `📊 ${t('period_this_month')}`;
+        return t('period_this_month');
       case 'this_week':
-        return `🗓️ ${t('period_this_week')}`;
+        return t('period_this_week');
       case 'day':
-        return `📅 ${specificDay}`;
+        return specificDay;
       case 'custom_range':
-        return `⏳ ${rangeFrom} → ${rangeTo}`;
+        return `${rangeFrom} — ${rangeTo}`;
       case 'all':
-        return `🌐 ${t('period_all')}`;
+        return t('period_all');
       default:
-        return `📊 ${t('period_this_month')}`;
+        return t('period_this_month');
     }
   };
 
   return (
-    <div className={styles.filterBar}>
-      {/* Dropdown Menu Container */}
-      <div className={styles.dropdownWrapper} ref={dropdownRef}>
+    <div className={styles.topToolbar}>
+      <h2 className={styles.sectionHeading}>{t('dashboard_overview')}</h2>
+
+      <div className={styles.toolbarRight}>
+        {/* Period Popover */}
+        <div className={styles.dropdownWrapper} ref={dropdownRef}>
+          <button
+            type="button"
+            className={`${styles.triggerBtn} ${isOpen ? styles.triggerBtnOpen : ''}`}
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.calendarIcon}>
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            <span className={styles.triggerText}>{getButtonLabel()}</span>
+            <svg
+              className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`}
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+
+          {isOpen && (
+            <div className={styles.popupMenu}>
+              <button
+                type="button"
+                className={`${styles.menuItem} ${selectedPeriod === 'this_month' ? styles.menuItemActive : ''}`}
+                onClick={() => handleSelectPreset('this_month')}
+              >
+                <span>{t('period_this_month')}</span>
+                {selectedPeriod === 'this_month' && <span className={styles.checkMark}>✓</span>}
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.menuItem} ${selectedPeriod === 'this_week' ? styles.menuItemActive : ''}`}
+                onClick={() => handleSelectPreset('this_week')}
+              >
+                <span>{t('period_this_week')}</span>
+                {selectedPeriod === 'this_week' && <span className={styles.checkMark}>✓</span>}
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.menuItem} ${selectedPeriod === 'all' ? styles.menuItemActive : ''}`}
+                onClick={() => handleSelectPreset('all')}
+              >
+                <span>{t('period_all')}</span>
+                {selectedPeriod === 'all' && <span className={styles.checkMark}>✓</span>}
+              </button>
+
+              <div className={styles.divider} />
+
+              <div className={styles.subSection}>
+                <span className={styles.subTitle}>{t('period_single_day')}</span>
+                <div className={styles.dateRow}>
+                  <input
+                    type="date"
+                    className={styles.dateInput}
+                    value={specificDay}
+                    onChange={(e) => handleDaySelect(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <form className={styles.subSection} onSubmit={handleApplyRange}>
+                <span className={styles.subTitle}>{t('period_custom_range')}</span>
+                <div className={styles.dateRow}>
+                  <label style={{ minWidth: '24px' }}>{t('from_date')}:</label>
+                  <input
+                    type="date"
+                    className={styles.dateInput}
+                    value={rangeFrom}
+                    onChange={(e) => setRangeFrom(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className={styles.dateRow}>
+                  <label style={{ minWidth: '24px' }}>{t('to_date')}:</label>
+                  <input
+                    type="date"
+                    className={styles.dateInput}
+                    value={rangeTo}
+                    onChange={(e) => setRangeTo(e.target.value)}
+                    required
+                  />
+                </div>
+                <button type="submit" className={styles.applyBtn}>
+                  {t('apply_filter')}
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+
+        {/* Primary CTA Button: + New Transaction */}
         <button
           type="button"
-          className={`${styles.triggerBtn} ${isOpen ? styles.triggerBtnOpen : ''}`}
-          onClick={() => setIsOpen(!isOpen)}
+          className={styles.newTxBtn}
+          onClick={onOpenNewTransaction}
         >
-          <span className={styles.triggerText}>{getButtonLabel()}</span>
-          <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`}>▼</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>{t('btn_new_transaction')}</span>
         </button>
-
-        {isOpen && (
-          <div className={styles.popupMenu}>
-            {/* Quick Presets */}
-            <button
-              type="button"
-              className={`${styles.menuItem} ${selectedPeriod === 'this_month' ? styles.menuItemActive : ''}`}
-              onClick={() => handleSelectPreset('this_month')}
-            >
-              <span className={styles.itemLabel}>📊 {t('period_this_month')}</span>
-              {selectedPeriod === 'this_month' && <span className={styles.checkMark}>✓</span>}
-            </button>
-
-            <button
-              type="button"
-              className={`${styles.menuItem} ${selectedPeriod === 'this_week' ? styles.menuItemActive : ''}`}
-              onClick={() => handleSelectPreset('this_week')}
-            >
-              <span className={styles.itemLabel}>🗓️ {t('period_this_week')}</span>
-              {selectedPeriod === 'this_week' && <span className={styles.checkMark}>✓</span>}
-            </button>
-
-            <button
-              type="button"
-              className={`${styles.menuItem} ${selectedPeriod === 'all' ? styles.menuItemActive : ''}`}
-              onClick={() => handleSelectPreset('all')}
-            >
-              <span className={styles.itemLabel}>🌐 {t('period_all')}</span>
-              {selectedPeriod === 'all' && <span className={styles.checkMark}>✓</span>}
-            </button>
-
-            <div className={styles.divider} />
-
-            {/* Specific Day Picker */}
-            <div className={styles.subSection}>
-              <span className={styles.subTitle}>📅 {t('period_single_day')}</span>
-              <div className={styles.dateRow}>
-                <input
-                  type="date"
-                  className={styles.dateInput}
-                  value={specificDay}
-                  onChange={(e) => handleDaySelect(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Custom Date Range Picker */}
-            <form className={styles.subSection} onSubmit={handleApplyRange}>
-              <span className={styles.subTitle}>⏳ {t('period_custom_range')}</span>
-              <div className={styles.dateRow}>
-                <label style={{ minWidth: '24px' }}>{t('from_date')}:</label>
-                <input
-                  type="date"
-                  className={styles.dateInput}
-                  value={rangeFrom}
-                  onChange={(e) => setRangeFrom(e.target.value)}
-                  required
-                />
-              </div>
-              <div className={styles.dateRow}>
-                <label style={{ minWidth: '24px' }}>{t('to_date')}:</label>
-                <input
-                  type="date"
-                  className={styles.dateInput}
-                  value={rangeTo}
-                  onChange={(e) => setRangeTo(e.target.value)}
-                  required
-                />
-              </div>
-              <button type="submit" className={styles.applyBtn}>
-                {t('apply_filter')}
-              </button>
-            </form>
-          </div>
-        )}
       </div>
-
-      {/* CSV Export Button */}
-      <button
-        type="button"
-        className={styles.exportBtn}
-        onClick={onExport}
-        disabled={isExporting}
-      >
-        {isExporting ? t('exporting') : t('btn_export_csv')}
-      </button>
     </div>
   );
 }

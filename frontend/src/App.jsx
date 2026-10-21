@@ -7,14 +7,12 @@ import Navbar from './components/Navbar/Navbar';
 import AuthModal from './components/Auth/AuthModal';
 import PeriodFilter from './components/Dashboard/PeriodFilter';
 import SummaryCards from './components/Dashboard/SummaryCards';
-import BudgetCard from './components/Dashboard/BudgetCard';
 import TransactionForm from './components/Dashboard/TransactionForm';
 import ExpensesChart from './components/Dashboard/ExpensesChart';
 import TransactionList from './components/Dashboard/TransactionList';
 import CategoryModal from './components/Categories/CategoryModal';
 import EditTransactionModal from './components/Dashboard/EditTransactionModal';
 
-// Helper to compute date ranges for filters
 function calculateDateRange(period, customDates) {
   const now = new Date();
   const todayStr = now.toISOString().split('T')[0];
@@ -25,7 +23,7 @@ function calculateDateRange(period, customDates) {
   }
 
   if (period === 'this_week') {
-    const dayOfWeek = now.getDay() || 7; // 1 = Monday, 7 = Sunday
+    const dayOfWeek = now.getDay() || 7;
     const monday = new Date(now);
     monday.setDate(now.getDate() - dayOfWeek + 1);
     const sunday = new Date(monday);
@@ -52,7 +50,7 @@ function calculateDateRange(period, customDates) {
     };
   }
 
-  return { from: null, to: null }; // 'all'
+  return { from: null, to: null };
 }
 
 function MainApp() {
@@ -62,23 +60,21 @@ function MainApp() {
   const [transactions, setTransactions] = useState([]);
   const [stats, setStats] = useState(null);
   const [categories, setCategories] = useState({ income: [], expense: [] });
-  
-  // Default to 'this_month' (Current month)
+
   const [selectedPeriod, setSelectedPeriod] = useState('this_month');
   const [activeRange, setActiveRange] = useState(() => calculateDateRange('this_month'));
-  
+
+  const [isNewTxModalOpen, setIsNewTxModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
 
-  // Check backend server status
   useEffect(() => {
     api.getStatus()
       .then(res => setServerMessage(res.message))
       .catch(() => setServerMessage(t('server_offline')));
   }, [t]);
 
-  // Fetch transactions and stats for the active date range
   const loadDashboardData = useCallback(async (range = activeRange) => {
     if (!isAuthenticated) return;
     try {
@@ -162,7 +158,12 @@ function MainApp() {
 
   return (
     <div className={styles.container}>
-      <Navbar serverMessage={serverMessage} />
+      <Navbar
+        serverMessage={serverMessage}
+        onOpenCategories={() => setIsCategoryModalOpen(true)}
+        onExportCsv={handleExportCsv}
+        isExporting={isExporting}
+      />
 
       {!isAuthenticated ? (
         <AuthModal />
@@ -171,32 +172,32 @@ function MainApp() {
           <PeriodFilter
             selectedPeriod={selectedPeriod}
             onSelectPeriod={handlePeriodChange}
-            onExport={handleExportCsv}
-            isExporting={isExporting}
+            onOpenNewTransaction={() => setIsNewTxModalOpen(true)}
           />
 
           <SummaryCards stats={stats} />
 
-          <BudgetCard totalExpense={stats?.totalExpense || 0} />
-          
-          <TransactionForm 
-            categories={categories} 
-            onAddTransaction={handleAddTransaction} 
-            onOpenCategories={() => setIsCategoryModalOpen(true)}
-          />
-
           <div className={styles.dashboardGrid}>
-            <ExpensesChart 
-              categoryBreakdown={stats?.categoryBreakdown} 
+            <ExpensesChart
+              categoryBreakdown={stats?.categoryBreakdown}
               categories={categories}
               stats={stats}
             />
-            <TransactionList 
-              transactions={transactions} 
+            <TransactionList
+              transactions={transactions}
+              categories={categories}
               onDeleteTransaction={handleDeleteTransaction}
               onEditTransaction={handleEditTransaction}
             />
           </div>
+
+          <TransactionForm
+            isOpen={isNewTxModalOpen}
+            onClose={() => setIsNewTxModalOpen(false)}
+            categories={categories}
+            onAddTransaction={handleAddTransaction}
+            onOpenCategories={() => setIsCategoryModalOpen(true)}
+          />
 
           <CategoryModal
             isOpen={isCategoryModalOpen}

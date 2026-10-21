@@ -48,13 +48,13 @@ export const translations = {
     card_expense: "Wydatki łączne",
 
     // Dashboard - Transaction Form
-    form_heading: "➕ Nowa transakcja",
-    btn_manage_categories: "🏷️ Kategorie",
-    type_expense: "Wydatek (-)",
-    type_income: "Przychód (+)",
+    form_heading: "Nowa transakcja",
+    btn_manage_categories: "Kategorie",
+    type_expense: "Wydatek",
+    type_income: "Przychód",
     amount_placeholder: "Kwota",
     comment_placeholder: "Komentarz (np. Obiad, paliwo, premia...)",
-    btn_add_transaction: "Dodaj",
+    btn_add_transaction: "Dodaj operację",
 
     // Dashboard - Chart
     chart_title: "Struktura wydatków",
@@ -70,7 +70,7 @@ export const translations = {
     delete_tx_tooltip: "Usuń wpis",
 
     // Category Modal
-    cat_modal_title: "🏷️ Zarządzanie kategoriami",
+    cat_modal_title: "Zarządzanie kategoriami",
     cat_tab_expense: "Kategorie wydatków",
     cat_tab_income: "Kategorie przychodów",
     cat_name_placeholder: "Nowa kategoria (np. Siłownia, Kawiarnia...)",
@@ -83,7 +83,7 @@ export const translations = {
     cat_delete_error: "Błąd podczas usuwania kategorii",
 
     // Edit Transaction Modal
-    edit_modal_title: "✏️ Edytuj operację",
+    edit_modal_title: "Edytuj operację",
     edit_tx_tooltip: "Edytuj wpis",
     btn_save: "Zapisz zmiany",
     btn_cancel: "Anuluj",
@@ -106,6 +106,15 @@ export const translations = {
 
     // General
     loading_app: "Ładowanie LifeTrack...",
+    dashboard_overview: "Przegląd finansowy",
+    btn_new_transaction: "Nowa operacja",
+    menu_language: "Język interfejsu",
+    menu_currency: "Waluta konta",
+    menu_categories: "Kategorie operacji",
+    menu_budget: "Miesięczny limit wydatków",
+    menu_export_csv: "Eksportuj dane (CSV)",
+    menu_api_docs: "Dokumentacja API (Swagger)",
+    menu_delete_account: "Usuń konto (RODO Art. 17)",
     delete_account_tooltip: "Usuń konto i dane (RODO Art. 17)",
     delete_account_confirm: "⚠️ Czy na pewno chcesz trwale usunąć swoje konto oraz wszystkie transakcje i kategorie (zgodnie z prawem do bycia zapomnianym RODO)? Tej operacji nie można cofnąć!",
     delete_account_demo_error: "Konto demonstracyjne nie może zostać usunięte.",
@@ -123,12 +132,12 @@ export const translations = {
     budget_clear: "Usuń limit",
 
     // Search & Category filter in list
-    search_placeholder: "🔍 Szukaj po komentarzu lub kategorii...",
+    search_placeholder: "Szukaj po komentarzu lub kategorii...",
     all_categories: "Wszystkie kategorie",
 
     // Chart tabs
-    chart_tab_doughnut: "🍩 Struktura",
-    chart_tab_bar: "📊 Bilans",
+    chart_tab_doughnut: "Struktura",
+    chart_tab_bar: "Bilans",
     bar_income: "Przychody",
     bar_expense: "Wydatki",
   },
@@ -181,13 +190,13 @@ export const translations = {
     card_expense: "Total Expenses",
 
     // Dashboard - Transaction Form
-    form_heading: "➕ New Transaction",
-    btn_manage_categories: "🏷️ Categories",
-    type_expense: "Expense (-)",
-    type_income: "Income (+)",
+    form_heading: "New Transaction",
+    btn_manage_categories: "Categories",
+    type_expense: "Expense",
+    type_income: "Income",
     amount_placeholder: "Amount",
     comment_placeholder: "Comment (e.g. Lunch, gas, bonus...)",
-    btn_add_transaction: "Add",
+    btn_add_transaction: "Add Transaction",
 
     // Dashboard - Chart
     chart_title: "Expenses Breakdown",
@@ -203,7 +212,7 @@ export const translations = {
     delete_tx_tooltip: "Delete record",
 
     // Category Modal
-    cat_modal_title: "🏷️ Manage Categories",
+    cat_modal_title: "Manage Categories",
     cat_tab_expense: "Expense Categories",
     cat_tab_income: "Income Categories",
     cat_name_placeholder: "New category (e.g. Gym, Coffee...)",
@@ -216,7 +225,7 @@ export const translations = {
     cat_delete_error: "Failed to delete category",
 
     // Edit Transaction Modal
-    edit_modal_title: "✏️ Edit Transaction",
+    edit_modal_title: "Edit Transaction",
     edit_tx_tooltip: "Edit record",
     btn_save: "Save changes",
     btn_cancel: "Cancel",
@@ -239,6 +248,15 @@ export const translations = {
 
     // General
     loading_app: "Loading LifeTrack...",
+    dashboard_overview: "Financial Overview",
+    btn_new_transaction: "New Transaction",
+    menu_language: "Interface Language",
+    menu_currency: "Account Currency",
+    menu_categories: "Transaction Categories",
+    menu_budget: "Monthly Expense Limit",
+    menu_export_csv: "Export Data (CSV)",
+    menu_api_docs: "API Documentation (Swagger)",
+    menu_delete_account: "Delete Account (GDPR Art. 17)",
     delete_account_tooltip: "Delete account & data (GDPR Art. 17)",
     delete_account_confirm: "⚠️ Are you sure you want to permanently delete your account and all transactions/categories (GDPR Right to Erasure)? This action cannot be undone!",
     delete_account_demo_error: "Demo account cannot be deleted.",
@@ -256,12 +274,12 @@ export const translations = {
     budget_clear: "Clear limit",
 
     // Search & Category filter in list
-    search_placeholder: "🔍 Search by comment or category...",
+    search_placeholder: "Search by comment or category...",
     all_categories: "All categories",
 
     // Chart tabs
-    chart_tab_doughnut: "🍩 Breakdown",
-    chart_tab_bar: "📊 Cashflow",
+    chart_tab_doughnut: "Breakdown",
+    chart_tab_bar: "Cashflow",
     bar_income: "Income",
     bar_expense: "Expenses",
   }

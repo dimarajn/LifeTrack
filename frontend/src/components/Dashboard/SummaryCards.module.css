@@ -1,61 +1,146 @@
 .cardsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
 
 .card {
   background-color: #17181f;
-  border: 1px solid #282a36;
+  border: 1px solid #262837;
   border-radius: 14px;
-  padding: 20px;
+  padding: 20px 22px;
   text-align: left;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  border-color: #3b82f6;
+  border-color: #363a4f;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .title {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
 }
 
-.icon {
-  font-size: 20px;
+.iconBox {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconBalance {
+  background-color: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+}
+
+.iconIncome {
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+}
+
+.iconExpense {
+  background-color: rgba(248, 113, 113, 0.12);
+  color: #f87171;
 }
 
 .value {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
-  color: #ffffff;
+  letter-spacing: -0.5px;
+  color: #f8fafc;
+}
+
+.currencyLabel {
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.75;
 }
 
 .positive {
-  color: #10b981;
+  color: #f8fafc;
 }
 
 .negative {
-  color: #ef4444;
+  color: #f87171;
 }
 
 .incomeValue {
-  color: #10b981;
+  color: #34d399;
 }
 
 .expenseValue {
   color: #f87171;
+}
+
+/* Embedded Monthly Budget Progress */
+.budgetFooter {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #232533;
+}
+
+.budgetMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.pctSafe {
+  color: #34d399;
+  font-weight: 600;
+}
+
+.pctWarning {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.pctDanger {
+  color: #f87171;
+  font-weight: 700;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 5px;
+  background-color: #232634;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.barSafe {
+  background-color: #10b981;
+}
+
+.barWarning {
+  background-color: #f59e0b;
+}
+
+.barDanger {
+  background-color: #ef4444;
 }

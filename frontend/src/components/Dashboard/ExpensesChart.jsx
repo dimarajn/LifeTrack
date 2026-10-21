@@ -145,7 +145,10 @@ export default function ExpensesChart({ categoryBreakdown, categories, stats }) 
             <Doughnut data={doughnutData} options={doughnutOptions} />
           ) : (
             <div className={styles.emptyState}>
-              <span className={styles.emptyIcon}>📉</span>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="1.6">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a10 10 0 0 1 10 10h-10z" />
+              </svg>
               <p style={{ whiteSpace: 'pre-line' }}>{t('chart_empty')}</p>
             </div>
           )
@@ -155,7 +158,11 @@ export default function ExpensesChart({ categoryBreakdown, categories, stats }) 
           </div>
         ) : (
           <div className={styles.emptyState}>
-            <span className={styles.emptyIcon}>📉</span>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="1.6">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
             <p style={{ whiteSpace: 'pre-line' }}>{t('chart_empty')}</p>
           </div>
         )}

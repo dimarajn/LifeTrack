@@ -1,11 +1,11 @@
 .listCard {
   background-color: #17181f;
-  border: 1px solid #282a36;
+  border: 1px solid #262837;
   border-radius: 14px;
-  padding: 24px;
+  padding: 22px 24px;
   text-align: left;
-  flex: 1;
-  min-width: 320px;
+  flex: 1.3;
+  min-width: 340px;
   display: flex;
   flex-direction: column;
 }
@@ -21,14 +21,42 @@
 
 .title {
   margin: 0;
-  font-size: 18px;
+  font-size: 16.5px;
   font-weight: 600;
-  color: #f3f4f6;
+  color: #f8fafc;
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconToggleBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background-color: #1e202b;
+  border: 1px solid #2d303f;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.iconToggleBtn:hover,
+.iconToggleActive {
+  color: #60a5fa;
+  border-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.12);
 }
 
 .filterGroup {
   display: flex;
-  background-color: #21232d;
+  background-color: #12131a;
+  border: 1px solid #262938;
   padding: 2px;
   border-radius: 8px;
 }
@@ -36,17 +64,21 @@
 .filterBtn {
   background: transparent;
   border: none;
-  color: #9ca3af;
+  color: #94a3b8;
   padding: 4px 10px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+}
+
+.filterBtn:hover {
+  color: #e2e8f0;
 }
 
 .filterBtnActive {
-  background-color: #3b82f6;
+  background-color: #282c3e;
   color: #ffffff;
 }
 
@@ -55,6 +87,18 @@
   gap: 8px;
   margin-bottom: 14px;
   flex-wrap: wrap;
+  animation: fadeDown 0.14s ease-out;
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .searchInput {
@@ -63,11 +107,11 @@
   background-color: #12131a;
   border: 1px solid #2d303f;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 7px 12px;
   color: #f3f4f6;
   font-size: 13px;
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 
 .searchInput:focus {
@@ -78,15 +122,11 @@
   background-color: #12131a;
   border: 1px solid #2d303f;
   border-radius: 8px;
-  padding: 8px 10px;
-  color: #d1d5db;
+  padding: 7px 10px;
+  color: #cbd5e1;
   font-size: 12.5px;
   outline: none;
   cursor: pointer;
-}
-
-.categoryFilterSelect:focus {
-  border-color: #3b82f6;
 }
 
 .list {
@@ -95,8 +135,8 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 400px;
+  gap: 6px;
+  max-height: 390px;
   overflow-y: auto;
 }
 
@@ -104,94 +144,127 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 14px;
-  background-color: #1f202b;
+  padding: 11px 14px;
+  background-color: #1c1e28;
   border-radius: 10px;
   border: 1px solid transparent;
-  transition: all 0.2s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .item:hover {
-  border-color: #374151;
-  background-color: #242633;
+  border-color: #2f3346;
+  background-color: #212430;
 }
 
 .itemLeft {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.catDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.itemText {
+  display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  min-width: 0;
+}
+
+.topLine {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .categoryTag {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
-  color: #ffffff;
-}
-
-.comment {
-  font-size: 12px;
-  color: #9ca3af;
+  color: #f1f5f9;
 }
 
 .date {
   font-size: 11px;
-  color: #6b7280;
+  color: #64748b;
+}
+
+.comment {
+  font-size: 12px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .itemRight {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .amount {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .incomeAmount {
-  color: #10b981;
+  color: #34d399;
 }
 
 .expenseAmount {
-  color: #ef4444;
+  color: #f87171;
 }
 
-.deleteBtn {
+/* Hover-only subtle action buttons */
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.item:hover .rowActions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.actionBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
   background: transparent;
   border: none;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 15px;
-  opacity: 0.5;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  padding: 4px;
-  border-radius: 4px;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.deleteBtn:hover {
-  opacity: 1;
-  transform: scale(1.15);
+.actionBtn:hover {
+  background-color: #2d3142;
+  color: #f8fafc;
 }
 
-.editBtn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 15px;
-  opacity: 0.5;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  padding: 4px;
-  border-radius: 4px;
-}
-
-.editBtn:hover {
-  opacity: 1;
-  transform: scale(1.15);
+.actionBtnDelete:hover {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #f87171;
 }
 
 .emptyState {
   text-align: center;
-  color: #9ca3af;
-  padding: 30px;
-  font-size: 14px;
+  color: #64748b;
+  padding: 36px 20px;
+  font-size: 13.5px;
 }
