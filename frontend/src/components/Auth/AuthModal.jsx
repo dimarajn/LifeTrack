@@ -12,6 +12,8 @@ export default function AuthModal() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [currency, setCurrency] = useState('PLN');
+  const [gdprConsent, setGdprConsent] = useState(false);
+  const [showGdprModal, setShowGdprModal] = useState(false);
   
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,13 +21,19 @@ export default function AuthModal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!isLogin && !gdprConsent) {
+      setError(t('gdpr_required_error'));
+      return;
+    }
+
     setLoading(true);
 
     try {
       if (isLogin) {
         await login(email, password);
       } else {
-        await register(email, password, name, currency);
+        await register(email, password, name, currency, gdprConsent);
       }
     } catch (err) {
       setError(err.message || t('auth_error'));
@@ -124,6 +132,31 @@ export default function AuthModal() {
           />
         </div>
 
+        {!isLogin && (
+          <div className={styles.gdprGroup}>
+            <label className={styles.gdprLabel}>
+              <input
+                type="checkbox"
+                className={styles.gdprCheckbox}
+                checked={gdprConsent}
+                onChange={(e) => setGdprConsent(e.target.checked)}
+                required
+              />
+              <span>
+                {t('gdpr_label_prefix')}
+                <button
+                  type="button"
+                  className={styles.gdprLinkBtn}
+                  onClick={() => setShowGdprModal(true)}
+                >
+                  {t('gdpr_link')}
+                </button>
+                . *
+              </span>
+            </label>
+          </div>
+        )}
+
         <button className={styles.submitBtn} type="submit" disabled={loading}>
           {loading ? t('loading') : isLogin ? t('btn_login') : t('btn_register')}
         </button>
@@ -132,6 +165,27 @@ export default function AuthModal() {
       <button className={styles.demoBtn} type="button" onClick={handleDemoLogin} disabled={loading}>
         {t('demo_login')}
       </button>
+
+      {showGdprModal && (
+        <div className={styles.gdprOverlay} onClick={() => setShowGdprModal(false)}>
+          <div className={styles.gdprModal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.gdprModalTitle}>{t('gdpr_modal_title')}</h3>
+            <div className={styles.gdprModalBody}>
+              {t('gdpr_modal_text')}
+            </div>
+            <button
+              type="button"
+              className={styles.gdprCloseBtn}
+              onClick={() => {
+                setGdprConsent(true);
+                setShowGdprModal(false);
+              }}
+            >
+              {t('gdpr_close')}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -20,8 +20,15 @@ export function LanguageProvider({ children }) {
     return langDict[key] || key;
   };
 
+  const translateCategory = (catName) => {
+    if (!catName) return '';
+    const langDict = translations[language] || translations.pl;
+    const key = `cat_${catName}`;
+    return langDict[key] || catName;
+  };
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, translateCategory }}>
       {children}
     </LanguageContext.Provider>
   );

@@ -3,9 +3,9 @@ import styles from './TransactionList.module.css';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 
-export default function TransactionList({ transactions, onDeleteTransaction }) {
+export default function TransactionList({ transactions, onDeleteTransaction, onEditTransaction }) {
   const { user } = useAuth();
-  const { language, t } = useLanguage();
+  const { language, t, translateCategory } = useLanguage();
   const currency = user?.currency || 'PLN';
   const [filter, setFilter] = useState('all'); // 'all', 'expense', 'income'
 
@@ -70,7 +70,7 @@ export default function TransactionList({ transactions, onDeleteTransaction }) {
           {filtered.map((item) => (
             <li key={item.id} className={styles.item}>
               <div className={styles.itemLeft}>
-                <span className={styles.categoryTag}>{item.category}</span>
+                <span className={styles.categoryTag}>{translateCategory(item.category)}</span>
                 {item.comment && <span className={styles.comment}>{item.comment}</span>}
                 <span className={styles.date}>{formatDate(item.date || item.createdAt)}</span>
               </div>
@@ -79,6 +79,13 @@ export default function TransactionList({ transactions, onDeleteTransaction }) {
                 <span className={`${styles.amount} ${item.type === 'expense' ? styles.expenseAmount : styles.incomeAmount}`}>
                   {item.type === 'expense' ? '-' : '+'}{Number(item.amount).toFixed(2)} {currency}
                 </span>
+                <button
+                  className={styles.editBtn}
+                  onClick={() => onEditTransaction(item)}
+                  title={t('edit_tx_tooltip')}
+                >
+                  ✏️
+                </button>
                 <button
                   className={styles.deleteBtn}
                   onClick={() => handleDelete(item.id)}

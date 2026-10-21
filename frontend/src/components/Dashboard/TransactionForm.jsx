@@ -5,7 +5,7 @@ import { useLanguage } from '../../context/LanguageContext';
 
 export default function TransactionForm({ categories, onAddTransaction, onOpenCategories }) {
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, translateCategory } = useLanguage();
   const currency = user?.currency || 'PLN';
 
   const [type, setType] = useState('expense');
@@ -93,7 +93,7 @@ export default function TransactionForm({ categories, onAddTransaction, onOpenCa
         >
           {availableCategories.map((cat) => (
             <option key={cat} value={cat}>
-              {cat}
+              {translateCategory(cat)}
             </option>
           ))}
         </select>

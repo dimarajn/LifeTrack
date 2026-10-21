@@ -11,7 +11,7 @@ const FALLBACK_PALETTE = [
 ];
 
 export default function ExpensesChart({ categoryBreakdown, categories }) {
-  const { t } = useLanguage();
+  const { t, translateCategory } = useLanguage();
   const categoryNames = categoryBreakdown ? Object.keys(categoryBreakdown) : [];
   const amounts = categoryBreakdown ? Object.values(categoryBreakdown) : [];
 
@@ -32,7 +32,7 @@ export default function ExpensesChart({ categoryBreakdown, categories }) {
   });
 
   const chartData = {
-    labels: categoryNames,
+    labels: categoryNames.map(c => translateCategory(c)),
     datasets: [
       {
         data: amounts,

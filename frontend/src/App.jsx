@@ -11,6 +11,7 @@ import TransactionForm from './components/Dashboard/TransactionForm';
 import ExpensesChart from './components/Dashboard/ExpensesChart';
 import TransactionList from './components/Dashboard/TransactionList';
 import CategoryModal from './components/Categories/CategoryModal';
+import EditTransactionModal from './components/Dashboard/EditTransactionModal';
 
 // Helper to compute date ranges for filters
 function calculateDateRange(period, customDates) {
@@ -67,6 +68,7 @@ function MainApp() {
   
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null);
 
   // Check backend server status
   useEffect(() => {
@@ -115,6 +117,14 @@ function MainApp() {
 
   const handleDeleteTransaction = async (id) => {
     await api.deleteTransaction(id);
+    await loadDashboardData(activeRange);
+  };
+
+  const handleEditTransaction = (tx) => {
+    setEditingTransaction(tx);
+  };
+
+  const handleSaveEdit = async () => {
     await loadDashboardData(activeRange);
   };
 
@@ -179,7 +189,8 @@ function MainApp() {
             />
             <TransactionList 
               transactions={transactions} 
-              onDeleteTransaction={handleDeleteTransaction} 
+              onDeleteTransaction={handleDeleteTransaction}
+              onEditTransaction={handleEditTransaction}
             />
           </div>
 
@@ -189,6 +200,14 @@ function MainApp() {
             categories={categories}
             onAddCategory={handleAddCategory}
             onDeleteCategory={handleDeleteCategory}
+          />
+
+          <EditTransactionModal
+            transaction={editingTransaction}
+            isOpen={!!editingTransaction}
+            onClose={() => setEditingTransaction(null)}
+            categories={categories}
+            onSave={handleSaveEdit}
           />
         </>
       )}

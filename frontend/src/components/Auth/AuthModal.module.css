@@ -129,3 +129,100 @@
   font-size: 13px;
   margin-bottom: 16px;
 }
+
+.gdprGroup {
+  margin-top: 4px;
+}
+
+.gdprLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.gdprCheckbox {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.gdprLinkBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #60a5fa;
+  text-decoration: underline;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.gdprLinkBtn:hover {
+  color: #93c5fd;
+}
+
+.gdprOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 16px;
+}
+
+.gdprModal {
+  background-color: #1e1f2b;
+  border: 1px solid #374151;
+  border-radius: 14px;
+  max-width: 480px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+}
+
+.gdprModalTitle {
+  margin: 0 0 14px 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #f3f4f6;
+}
+
+.gdprModalBody {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #d1d5db;
+  white-space: pre-line;
+  background: #14151e;
+  border: 1px solid #2d303f;
+  border-radius: 8px;
+  padding: 14px;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 18px;
+}
+
+.gdprCloseBtn {
+  width: 100%;
+  padding: 10px;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.gdprCloseBtn:hover {
+  background-color: #2563eb;
+}

@@ -36,10 +36,12 @@ export const api = {
   register: (credentials) => apiRequest('/auth/register', { method: 'POST', body: credentials }),
   login: (credentials) => apiRequest('/auth/login', { method: 'POST', body: credentials }),
   getMe: () => apiRequest('/auth/me'),
+  updateCurrency: (currency) => apiRequest('/auth/currency', { method: 'PUT', body: { currency } }),
 
   // Transactions
   getTransactions: (params = '') => apiRequest(`/transactions${params ? `?${params}` : ''}`),
   createTransaction: (tx) => apiRequest('/transactions', { method: 'POST', body: tx }),
+  updateTransaction: (id, tx) => apiRequest(`/transactions/${id}`, { method: 'PUT', body: tx }),
   deleteTransaction: (id) => apiRequest(`/transactions/${id}`, { method: 'DELETE' }),
   getStats: (params = '') => apiRequest(`/transactions/stats${params ? `?${params}` : ''}`),
 

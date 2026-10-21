@@ -186,7 +186,7 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Transaction not found or unauthorized' });
     }
 
-    await prisma.transaction.delete({
+   await prisma.transaction.delete({
       where: { id }
     });
 
@@ -194,6 +194,72 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     console.error('Delete transaction error:', error);
     res.status(500).json({ error: 'Failed to delete transaction' });
+  }
+});
+
+// PUT /api/transactions/:id - Update an existing transaction
+router.put('/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid transaction ID' });
+    }
+
+    const { type, amount, category, comment, date } = req.body;
+
+    // Verify ownership
+    const existing = await prisma.transaction.findFirst({
+      where: { id, userId: req.user.id }
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: 'Transaction not found or unauthorized' });
+    }
+
+    const updateData = {};
+    if (type) {
+      const normalizedType = type.toLowerCase();
+      if (!['income', 'expense'].includes(normalizedType)) {
+        return res.status(400).json({ error: 'Type must be "income" or "expense"' });
+      }
+      updateData.type = normalizedType;
+    }
+
+    if (amount !== undefined) {
+      const numAmount = parseFloat(amount);
+      if (isNaN(numAmount) || numAmount <= 0) {
+        return res.status(400).json({ error: 'Amount must be a positive number' });
+      }
+      updateData.amount = numAmount;
+    }
+
+    if (category) {
+      updateData.category = category.trim();
+    }
+
+    if (comment !== undefined) {
+      updateData.comment = comment ? comment.trim() : null;
+    }
+
+    if (date) {
+      const d = new Date(date);
+      if (!isNaN(d)) {
+        updateData.date = d;
+      }
+    }
+
+    const updated = await prisma.transaction.update({
+      where: { id },
+      data: updateData
+    });
+
+    res.json({
+      message: 'Transaction updated successfully',
+      data: updated
+    });
+  } catch (error) {
+    console.error('Update transaction error:', error);
+    res.status(500).json({ error: 'Failed to update transaction' });
   }
 });
 

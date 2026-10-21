@@ -131,6 +131,29 @@
   font-weight: bold;
 }
 
+.currencySelect {
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: 1px solid #60a5fa;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.15s ease;
+}
+
+.currencySelect:hover {
+  background-color: #2563eb;
+}
+
+.currencySelect option {
+  background-color: #17181f;
+  color: #f3f4f6;
+  font-weight: 600;
+}
+
 .logoutBtn {
   background-color: #ef4444;
   color: white;

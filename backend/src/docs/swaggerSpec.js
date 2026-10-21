@@ -227,6 +227,25 @@ const swaggerSpec = {
       }
     },
     '/api/transactions/{id}': {
+      put: {
+        tags: ['Transakcje (Transactions)'],
+        summary: 'Edycja istniejącej operacji',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'integer' }, description: 'ID operacji' }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/CreateTransactionRequest' } }
+          }
+        },
+        responses: {
+          200: { description: 'Operacja zaktualizowana pomyślnie' },
+          400: { description: 'Nieprawidłowe dane' },
+          404: { description: 'Operacja nie znaleziona' }
+        }
+      },
       delete: {
         tags: ['Transakcje (Transactions)'],
         summary: 'Usunięcie wybranej transakcji',

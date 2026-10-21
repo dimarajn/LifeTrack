@@ -32,8 +32,8 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const register = async (email, password, name, currency) => {
-    const data = await api.register({ email, password, name, currency });
+  const register = async (email, password, name, currency, gdprConsent) => {
+    const data = await api.register({ email, password, name, currency, gdprConsent });
     localStorage.setItem('lifetrack_token', data.token);
     setToken(data.token);
     setUser(data.user);
@@ -46,8 +46,14 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateCurrency = async (newCurrency) => {
+    const data = await api.updateCurrency(newCurrency);
+    setUser(data.user);
+    return data.user;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateCurrency, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

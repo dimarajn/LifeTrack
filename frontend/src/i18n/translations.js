@@ -22,6 +22,12 @@ export const translations = {
     loading: "Ładowanie...",
     auth_error: "Błąd uwierzytelniania",
     demo_error: "Nie udało się zalogować na konto demo",
+    gdpr_label_prefix: "Wyrażam zgodę na przetwarzanie moich danych osobowych zgodnie z ",
+    gdpr_link: "Klauzulą informacyjną RODO",
+    gdpr_required_error: "Musisz zaakceptować zgodę RODO, aby utworzyć konto.",
+    gdpr_modal_title: "🔒 Klauzula informacyjna RODO (GDPR)",
+    gdpr_modal_text: "Zgodnie z art. 13 Rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 (RODO) informujemy, że:\n\n1. Administratorem Twoich danych osobowych jest system LifeTrack.\n2. Przetwarzamy dane podane podczas rejestracji (adres e-mail, imię, preferowana waluta oraz historia operacji finansowych) wyłącznie w celu świadczenia usługi prowadzenia budżetu osobistego.\n3. Podstawą prawną przetwarzania jest Twoja dobrowolna zgoda (art. 6 ust. 1 lit. a RODO) oraz realizacja usługi (art. 6 ust. 1 lit. b RODO).\n4. Twoje dane są bezpiecznie przechowywane w bazie danych (hasła są szyfrowane algorytmem bcrypt) i nie są przekazywane podmiotom trzecim.\n5. Masz prawo dostępu do swoich danych, ich sprostowania, eksportu (CSV) oraz całkowitego usunięcia konta.",
+    gdpr_close: "Rozumiem i zamykam",
 
     // Period Filter & Export
     period_this_month: "Ten miesiąc",
@@ -76,6 +82,28 @@ export const translations = {
     cat_create_error: "Błąd podczas tworzenia kategorii",
     cat_delete_error: "Błąd podczas usuwania kategorii",
 
+    // Edit Transaction Modal
+    edit_modal_title: "✏️ Edytuj operację",
+    edit_tx_tooltip: "Edytuj wpis",
+    btn_save: "Zapisz zmiany",
+    btn_cancel: "Anuluj",
+    edit_success: "Operacja zaktualizowana!",
+    edit_error: "Nie udało się zaktualizować operacji",
+
+    // Default Categories
+    cat_Food: "Jedzenie",
+    cat_Transport: "Transport",
+    cat_Rent: "Czynsz / Mieszkanie",
+    cat_Entertainment: "Rozrywka",
+    cat_Health: "Zdrowie",
+    cat_Bills: "Rachunki",
+    cat_Shopping: "Zakupy",
+    cat_Salary: "Wynagrodzenie",
+    cat_Freelance: "Freelance / Zlecenia",
+    cat_Gift: "Prezent",
+    cat_Investments: "Inwestycje",
+    cat_Other: "Inne",
+
     // General
     loading_app: "Ładowanie LifeTrack...",
   },
@@ -102,6 +130,12 @@ export const translations = {
     loading: "Loading...",
     auth_error: "Authentication error",
     demo_error: "Failed to log in with demo account",
+    gdpr_label_prefix: "I consent to the processing of my personal data in accordance with the ",
+    gdpr_link: "GDPR Privacy Notice",
+    gdpr_required_error: "You must accept the GDPR data processing consent to register.",
+    gdpr_modal_title: "🔒 GDPR Information Clause (RODO)",
+    gdpr_modal_text: "In accordance with Art. 13 of the General Data Protection Regulation (EU) 2016/679 (GDPR), please be informed that:\n\n1. The controller of your personal data is the LifeTrack system.\n2. We process the data provided during registration (email address, name, preferred currency, and financial transaction history) solely for the purpose of providing personal budget management services.\n3. The legal basis for processing is your voluntary consent (Art. 6(1)(a) GDPR) and service performance (Art. 6(1)(b) GDPR).\n4. Your data is securely stored in the database (passwords are hashed using bcrypt) and is never shared with third parties.\n5. You have the right to access, rectify, export (CSV), or request erasure of your personal data at any time.",
+    gdpr_close: "Got it, close",
 
     // Period Filter & Export
     period_this_month: "This Month",
@@ -155,6 +189,28 @@ export const translations = {
     cat_color_tooltip: "Choose custom color",
     cat_create_error: "Failed to create category",
     cat_delete_error: "Failed to delete category",
+
+    // Edit Transaction Modal
+    edit_modal_title: "✏️ Edit Transaction",
+    edit_tx_tooltip: "Edit record",
+    btn_save: "Save changes",
+    btn_cancel: "Cancel",
+    edit_success: "Transaction updated!",
+    edit_error: "Failed to update transaction",
+
+    // Default Categories
+    cat_Food: "Food",
+    cat_Transport: "Transport",
+    cat_Rent: "Rent",
+    cat_Entertainment: "Entertainment",
+    cat_Health: "Health",
+    cat_Bills: "Bills",
+    cat_Shopping: "Shopping",
+    cat_Salary: "Salary",
+    cat_Freelance: "Freelance",
+    cat_Gift: "Gift",
+    cat_Investments: "Investments",
+    cat_Other: "Other",
 
     // General
     loading_app: "Loading LifeTrack...",

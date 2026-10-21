@@ -10,10 +10,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'lifetrack_super_secret_jwt_key_202
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name, currency } = req.body;
+    const { email, password, name, currency, gdprConsent } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    if (!gdprConsent) {
+      return res.status(400).json({ error: 'GDPR / RODO data processing consent is required' });
     }
 
     if (password.length < 6) {
@@ -138,6 +142,38 @@ router.get('/me', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({ error: 'Server error fetching user profile' });
+  }
+});
+
+// PUT /api/auth/currency - Update user preferred currency
+router.put('/currency', authenticateToken, async (req, res) => {
+  try {
+    const { currency } = req.body;
+    const allowedCurrencies = ['PLN', 'EUR', 'USD', 'GBP'];
+
+    if (!currency || !allowedCurrencies.includes(currency.toUpperCase())) {
+      return res.status(400).json({ error: 'Invalid currency. Supported: PLN, EUR, USD, GBP' });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { currency: currency.toUpperCase() },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        currency: true,
+        createdAt: true
+      }
+    });
+
+    res.json({
+      message: 'Currency updated successfully',
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error('Update currency error:', error);
+    res.status(500).json({ error: 'Failed to update currency' });
   }
 });
 

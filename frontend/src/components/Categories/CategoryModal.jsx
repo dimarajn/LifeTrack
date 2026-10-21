@@ -9,7 +9,7 @@ const PRESET_COLORS = [
 ];
 
 export default function CategoryModal({ isOpen, onClose, categories, onAddCategory, onDeleteCategory }) {
-  const { t } = useLanguage();
+  const { t, translateCategory } = useLanguage();
   const [activeTab, setActiveTab] = useState('expense'); // 'expense' | 'income'
   const [newCatName, setNewCatName] = useState('');
   const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[0]);
@@ -125,7 +125,7 @@ export default function CategoryModal({ isOpen, onClose, categories, onAddCatego
                     className={styles.colorDot}
                     style={{ backgroundColor: cat.color || '#3B82F6' }}
                   />
-                  <span className={styles.categoryName}>{cat.name}</span>
+                  <span className={styles.categoryName}>{translateCategory(cat.name)}</span>
                 </div>
 
                 <div>
