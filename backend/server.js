@@ -1,4 +1,6 @@
 require('dotenv').config();
+const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
@@ -35,14 +37,28 @@ app.get('/api/status', (req, res) => {
   });
 });
 
+// Serve static frontend in production if built
+const frontendDistPath = path.join(__dirname, '../frontend/dist');
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+}
+
 // Central error handler
 app.use((err, req, res, next) => {
   console.error('Unhandled Server Error:', err);
   res.status(500).json({ error: 'Internal server error' });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 LifeTrack Server is running on port ${PORT}`);
-  console.log(`📖 Swagger API Documentation: http://localhost:${PORT}/api/docs`);
-});
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 LifeTrack Server is running on port ${PORT}`);
+    console.log(`📖 Swagger API Documentation: http://localhost:${PORT}/api/docs`);
+  });
+}
+
+module.exports = app;

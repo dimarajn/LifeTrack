@@ -1,0 +1,8 @@
+{
+  "name": "lifetrack-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "cd backend && npm install && npx prisma generate && cd ../frontend && npm install && npm run build",
+    "start": "cd backend && node server.js"
+  }
+}

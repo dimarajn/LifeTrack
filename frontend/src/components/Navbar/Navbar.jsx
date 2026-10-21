@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import styles from './Navbar.module.css';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { API_BASE_URL } from '../../api/client';
 
 export default function Navbar({
   serverMessage,
@@ -269,7 +270,7 @@ export default function Navbar({
 
                 {/* Swagger API Docs */}
                 <a
-                  href="http://localhost:5000/api/docs"
+                  href={`${API_BASE_URL}/docs`}
                   target="_blank"
                   rel="noreferrer"
                   className={styles.menuItem}
