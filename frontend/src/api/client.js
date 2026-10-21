@@ -37,6 +37,8 @@ export const api = {
   login: (credentials) => apiRequest('/auth/login', { method: 'POST', body: credentials }),
   getMe: () => apiRequest('/auth/me'),
   updateCurrency: (currency) => apiRequest('/auth/currency', { method: 'PUT', body: { currency } }),
+  updateBudget: (monthlyBudget) => apiRequest('/auth/budget', { method: 'PUT', body: { monthlyBudget } }),
+  deleteAccount: () => apiRequest('/auth/account', { method: 'DELETE' }),
 
   // Transactions
   getTransactions: (params = '') => apiRequest(`/transactions${params ? `?${params}` : ''}`),

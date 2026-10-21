@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function Navbar({ serverMessage }) {
-  const { user, logout, updateCurrency } = useAuth();
+  const { user, logout, updateCurrency, deleteAccount } = useAuth();
   const { language, setLanguage, t } = useLanguage();
 
   const handleCurrencyChange = async (e) => {
@@ -12,6 +12,20 @@ export default function Navbar({ serverMessage }) {
       await updateCurrency(newCurrency);
     } catch (err) {
       console.error('Failed to change currency:', err);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (user?.email === 'demo@lifetrack.app') {
+      alert(t('delete_account_demo_error'));
+      return;
+    }
+    if (window.confirm(t('delete_account_confirm'))) {
+      try {
+        await deleteAccount();
+      } catch (err) {
+        alert(err.message || 'Error');
+      }
     }
   };
 
@@ -75,6 +89,16 @@ export default function Navbar({ serverMessage }) {
                 <option value="USD">USD ($)</option>
                 <option value="GBP">GBP (£)</option>
               </select>
+              {user.email !== 'demo@lifetrack.app' && (
+                <button
+                  type="button"
+                  className={styles.deleteAccountBtn}
+                  onClick={handleDeleteAccount}
+                  title={t('delete_account_tooltip')}
+                >
+                  🗑️
+                </button>
+              )}
             </div>
             <button className={styles.logoutBtn} onClick={logout}>
               {t('logout')}

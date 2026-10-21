@@ -7,6 +7,7 @@ import Navbar from './components/Navbar/Navbar';
 import AuthModal from './components/Auth/AuthModal';
 import PeriodFilter from './components/Dashboard/PeriodFilter';
 import SummaryCards from './components/Dashboard/SummaryCards';
+import BudgetCard from './components/Dashboard/BudgetCard';
 import TransactionForm from './components/Dashboard/TransactionForm';
 import ExpensesChart from './components/Dashboard/ExpensesChart';
 import TransactionList from './components/Dashboard/TransactionList';
@@ -175,6 +176,8 @@ function MainApp() {
           />
 
           <SummaryCards stats={stats} />
+
+          <BudgetCard totalExpense={stats?.totalExpense || 0} />
           
           <TransactionForm 
             categories={categories} 
@@ -186,6 +189,7 @@ function MainApp() {
             <ExpensesChart 
               categoryBreakdown={stats?.categoryBreakdown} 
               categories={categories}
+              stats={stats}
             />
             <TransactionList 
               transactions={transactions} 

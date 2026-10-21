@@ -52,8 +52,19 @@ export function AuthProvider({ children }) {
     return data.user;
   };
 
+  const updateBudget = async (monthlyBudget) => {
+    const data = await api.updateBudget(monthlyBudget);
+    setUser(data.user);
+    return data.user;
+  };
+
+  const deleteAccount = async () => {
+    await api.deleteAccount();
+    logout();
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateCurrency, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateCurrency, updateBudget, deleteAccount, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

@@ -50,6 +50,7 @@ router.post('/register', async (req, res) => {
         email: true,
         name: true,
         currency: true,
+        monthlyBudget: true,
         createdAt: true
       }
     });
@@ -110,6 +111,7 @@ router.post('/login', async (req, res) => {
         email: user.email,
         name: user.name,
         currency: user.currency,
+        monthlyBudget: user.monthlyBudget,
         createdAt: user.createdAt
       },
       token
@@ -130,6 +132,7 @@ router.get('/me', authenticateToken, async (req, res) => {
         email: true,
         name: true,
         currency: true,
+        monthlyBudget: true,
         createdAt: true
       }
     });
@@ -163,6 +166,7 @@ router.put('/currency', authenticateToken, async (req, res) => {
         email: true,
         name: true,
         currency: true,
+        monthlyBudget: true,
         createdAt: true
       }
     });
@@ -174,6 +178,70 @@ router.put('/currency', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Update currency error:', error);
     res.status(500).json({ error: 'Failed to update currency' });
+  }
+});
+
+// PUT /api/auth/budget - Update user monthly budget limit
+router.put('/budget', authenticateToken, async (req, res) => {
+  try {
+    const { monthlyBudget } = req.body;
+    let parsedBudget = null;
+
+    if (monthlyBudget !== null && monthlyBudget !== '' && monthlyBudget !== undefined) {
+      parsedBudget = parseFloat(monthlyBudget);
+      if (isNaN(parsedBudget) || parsedBudget < 0) {
+        return res.status(400).json({ error: 'Budget must be a positive number or null' });
+      }
+      if (parsedBudget === 0) parsedBudget = null;
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { monthlyBudget: parsedBudget },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        currency: true,
+        monthlyBudget: true,
+        createdAt: true
+      }
+    });
+
+    res.json({
+      message: 'Monthly budget updated successfully',
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error('Update budget error:', error);
+    res.status(500).json({ error: 'Failed to update monthly budget' });
+  }
+});
+
+// DELETE /api/auth/account - Delete user account and all personal data (RODO / GDPR Art. 17)
+router.delete('/account', authenticateToken, async (req, res) => {
+  try {
+    // Prevent deleting the shared demo account
+    const currentUser = await prisma.user.findUnique({
+      where: { id: req.user.id }
+    });
+
+    if (!currentUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (currentUser.email === 'demo@lifetrack.app') {
+      return res.status(403).json({ error: 'Demo account cannot be deleted' });
+    }
+
+    await prisma.user.delete({
+      where: { id: req.user.id }
+    });
+
+    res.json({ message: 'Account and all associated personal data deleted permanently (RODO Art. 17)' });
+  } catch (error) {
+    console.error('Delete account error:', error);
+    res.status(500).json({ error: 'Failed to delete user account' });
   }
 });
 

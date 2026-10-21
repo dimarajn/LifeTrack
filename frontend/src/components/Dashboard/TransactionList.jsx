@@ -7,11 +7,27 @@ export default function TransactionList({ transactions, onDeleteTransaction, onE
   const { user } = useAuth();
   const { language, t, translateCategory } = useLanguage();
   const currency = user?.currency || 'PLN';
-  const [filter, setFilter] = useState('all'); // 'all', 'expense', 'income'
 
-  const filtered = transactions.filter(t => {
-    if (filter === 'all') return true;
-    return t.type === filter;
+  const [filter, setFilter] = useState('all'); // 'all', 'expense', 'income'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // Unique categories present in current transactions
+  const uniqueCategories = Array.from(new Set(transactions.map(tx => tx.category).filter(Boolean)));
+
+  const filtered = transactions.filter(item => {
+    if (filter !== 'all' && item.type !== filter) return false;
+    if (selectedCategory !== 'all' && item.category !== selectedCategory) return false;
+
+    if (searchQuery.trim() !== '') {
+      const q = searchQuery.toLowerCase().trim();
+      const commentMatch = (item.comment || '').toLowerCase().includes(q);
+      const rawCatMatch = (item.category || '').toLowerCase().includes(q);
+      const translatedCatMatch = translateCategory(item.category).toLowerCase().includes(q);
+      if (!commentMatch && !rawCatMatch && !translatedCatMatch) return false;
+    }
+
+    return true;
   });
 
   const formatDate = (dateStr) => {
@@ -59,6 +75,29 @@ export default function TransactionList({ transactions, onDeleteTransaction, onE
             {t('filter_incomes')}
           </button>
         </div>
+      </div>
+
+      {/* Search & Category Filter Row */}
+      <div className={styles.searchBarRow}>
+        <input
+          type="text"
+          className={styles.searchInput}
+          placeholder={t('search_placeholder')}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <select
+          className={styles.categoryFilterSelect}
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="all">{t('all_categories')}</option>
+          {uniqueCategories.map(cat => (
+            <option key={cat} value={cat}>
+              {translateCategory(cat)}
+            </option>
+          ))}
+        </select>
       </div>
 
       {filtered.length === 0 ? (

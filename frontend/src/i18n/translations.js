@@ -106,6 +106,31 @@ export const translations = {
 
     // General
     loading_app: "Ładowanie LifeTrack...",
+    delete_account_tooltip: "Usuń konto i dane (RODO Art. 17)",
+    delete_account_confirm: "⚠️ Czy na pewno chcesz trwale usunąć swoje konto oraz wszystkie transakcje i kategorie (zgodnie z prawem do bycia zapomnianym RODO)? Tej operacji nie można cofnąć!",
+    delete_account_demo_error: "Konto demonstracyjne nie może zostać usunięte.",
+
+    // Budget Limit Card
+    budget_title: "🎯 Miesięczny limit wydatków",
+    budget_not_set: "Nie ustawiono jeszcze limitu wydatków na miesiąc",
+    budget_set_btn: "Ustaw limit",
+    budget_edit_btn: "Zmień limit",
+    budget_spent: "Wydano",
+    budget_remaining: "Pozostało",
+    budget_exceeded: "⚠️ Przekroczono limit o",
+    budget_warning: "⚡ Uwaga! Wykorzystano ponad 80% budżetu",
+    budget_placeholder: "Kwota limitu",
+    budget_clear: "Usuń limit",
+
+    // Search & Category filter in list
+    search_placeholder: "🔍 Szukaj po komentarzu lub kategorii...",
+    all_categories: "Wszystkie kategorie",
+
+    // Chart tabs
+    chart_tab_doughnut: "🍩 Struktura",
+    chart_tab_bar: "📊 Bilans",
+    bar_income: "Przychody",
+    bar_expense: "Wydatki",
   },
   en: {
     // Brand & Header
@@ -214,5 +239,30 @@ export const translations = {
 
     // General
     loading_app: "Loading LifeTrack...",
+    delete_account_tooltip: "Delete account & data (GDPR Art. 17)",
+    delete_account_confirm: "⚠️ Are you sure you want to permanently delete your account and all transactions/categories (GDPR Right to Erasure)? This action cannot be undone!",
+    delete_account_demo_error: "Demo account cannot be deleted.",
+
+    // Budget Limit Card
+    budget_title: "🎯 Monthly Expense Limit",
+    budget_not_set: "No monthly expense limit set yet",
+    budget_set_btn: "Set limit",
+    budget_edit_btn: "Edit limit",
+    budget_spent: "Spent",
+    budget_remaining: "Remaining",
+    budget_exceeded: "⚠️ Limit exceeded by",
+    budget_warning: "⚡ Warning! Over 80% of monthly budget used",
+    budget_placeholder: "Limit amount",
+    budget_clear: "Clear limit",
+
+    // Search & Category filter in list
+    search_placeholder: "🔍 Search by comment or category...",
+    all_categories: "All categories",
+
+    // Chart tabs
+    chart_tab_doughnut: "🍩 Breakdown",
+    chart_tab_bar: "📊 Cashflow",
+    bar_income: "Income",
+    bar_expense: "Expenses",
   }
 };
