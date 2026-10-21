@@ -69,4 +69,10 @@ export const api = {
   getCategories: () => apiRequest('/categories'),
   createCategory: (cat) => apiRequest('/categories', { method: 'POST', body: cat }),
   deleteCategory: (id) => apiRequest(`/categories/${id}`, { method: 'DELETE' }),
+
+  // Savings Goals
+  getGoals: () => apiRequest('/goals'),
+  createGoal: (goal) => apiRequest('/goals', { method: 'POST', body: goal }),
+  depositGoal: (id, amount) => apiRequest(`/goals/${id}/deposit`, { method: 'PATCH', body: { amount } }),
+  deleteGoal: (id) => apiRequest(`/goals/${id}`, { method: 'DELETE' }),
 };

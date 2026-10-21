@@ -140,6 +140,23 @@ export const translations = {
     chart_tab_bar: "Bilans",
     bar_income: "Przychody",
     bar_expense: "Wydatki",
+
+    // Savings Goals
+    goals_title: "Cele oszczędnościowe",
+    goals_add_btn: "Nowy cel",
+    goals_empty: "Nie masz jeszcze żadnych celów oszczędnościowych. Dodaj swój pierwszy cel!",
+    goals_deposit_btn: "+ Wpłać",
+    goals_completed: "Cel osiągnięty!",
+    goals_no_deadline: "Bez terminu",
+    goals_deadline_prefix: "do",
+    goals_delete_confirm: "Czy na pewno chcesz usunąć ten cel oszczędnościowy?",
+    goals_modal_title: "Nowy cel oszczędnościowy",
+    goals_name_label: "Nazwa celu",
+    goals_name_placeholder: "np. Wakacje, Nowy laptop, Poduszka finansowa...",
+    goals_target_label: "Kwota docelowa",
+    goals_initial_label: "Już odłożono (opcjonalnie)",
+    goals_deadline_label: "Termin docelowy (opcjonalnie)",
+    goals_color_label: "Kolor paska",
   },
   en: {
     // Brand & Header
@@ -282,5 +299,22 @@ export const translations = {
     chart_tab_bar: "Cashflow",
     bar_income: "Income",
     bar_expense: "Expenses",
+
+    // Savings Goals
+    goals_title: "Savings Goals",
+    goals_add_btn: "New Goal",
+    goals_empty: "You don't have any savings goals yet. Create your first goal!",
+    goals_deposit_btn: "+ Deposit",
+    goals_completed: "Goal reached!",
+    goals_no_deadline: "No deadline",
+    goals_deadline_prefix: "by",
+    goals_delete_confirm: "Are you sure you want to delete this savings goal?",
+    goals_modal_title: "New Savings Goal",
+    goals_name_label: "Goal Title",
+    goals_name_placeholder: "e.g. Vacation, New MacBook, Emergency Fund...",
+    goals_target_label: "Target Amount",
+    goals_initial_label: "Already Saved (optional)",
+    goals_deadline_label: "Target Date (optional)",
+    goals_color_label: "Accent Color",
   }
 };

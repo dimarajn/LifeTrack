@@ -7,6 +7,7 @@ import Navbar from './components/Navbar/Navbar';
 import AuthModal from './components/Auth/AuthModal';
 import PeriodFilter from './components/Dashboard/PeriodFilter';
 import SummaryCards from './components/Dashboard/SummaryCards';
+import GoalsSection from './components/Dashboard/GoalsSection';
 import TransactionForm from './components/Dashboard/TransactionForm';
 import ExpensesChart from './components/Dashboard/ExpensesChart';
 import TransactionList from './components/Dashboard/TransactionList';
@@ -60,6 +61,7 @@ function MainApp() {
   const [transactions, setTransactions] = useState([]);
   const [stats, setStats] = useState(null);
   const [categories, setCategories] = useState({ income: [], expense: [] });
+  const [goals, setGoals] = useState([]);
 
   const [selectedPeriod, setSelectedPeriod] = useState('this_month');
   const [activeRange, setActiveRange] = useState(() => calculateDateRange('this_month'));
@@ -83,14 +85,16 @@ function MainApp() {
       if (range.to) queryParams.append('to', range.to);
       const queryString = queryParams.toString();
 
-      const [txList, statsData, catsData] = await Promise.all([
+      const [txList, statsData, catsData, goalsData] = await Promise.all([
         api.getTransactions(queryString),
         api.getStats(queryString),
-        api.getCategories()
+        api.getCategories(),
+        api.getGoals()
       ]);
       setTransactions(txList);
       setStats(statsData);
       setCategories(catsData);
+      setGoals(goalsData);
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
     }
@@ -152,6 +156,24 @@ function MainApp() {
     setCategories(updatedCategories);
   };
 
+  const handleAddGoal = async (newGoal) => {
+    await api.createGoal(newGoal);
+    const updatedGoals = await api.getGoals();
+    setGoals(updatedGoals);
+  };
+
+  const handleDepositGoal = async (id, amount) => {
+    await api.depositGoal(id, amount);
+    const updatedGoals = await api.getGoals();
+    setGoals(updatedGoals);
+  };
+
+  const handleDeleteGoal = async (id) => {
+    await api.deleteGoal(id);
+    const updatedGoals = await api.getGoals();
+    setGoals(updatedGoals);
+  };
+
   if (authLoading) {
     return <div className={styles.loadingSpinner}>{t('loading_app')}</div>;
   }
@@ -176,6 +198,13 @@ function MainApp() {
           />
 
           <SummaryCards stats={stats} />
+
+          <GoalsSection
+            goals={goals}
+            onAddGoal={handleAddGoal}
+            onDepositGoal={handleDepositGoal}
+            onDeleteGoal={handleDeleteGoal}
+          />
 
           <div className={styles.dashboardGrid}>
             <ExpensesChart
