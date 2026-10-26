@@ -137,248 +137,292 @@ export default function Navbar({
       </div>
 
       <div className={styles.actions}>
-        {/* Settings Gear Button (always visible; shows Language when logged out, full settings when logged in) */}
-        <div className={styles.menuWrapper} ref={settingsRef}>
-          <button
-            type="button"
-            className={`${styles.gearBtn} ${settingsOpen ? styles.gearBtnActive : ''}`}
-            onClick={() => {
-              setSettingsOpen(!settingsOpen);
-              setProfileOpen(false);
-            }}
-            title={t('menu_settings')}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-            </svg>
-          </button>
+        {!user ? (
+          /* Public Language Dropdown when logged out */
+          <div className={styles.menuWrapper} ref={settingsRef}>
+            <button
+              type="button"
+              className={`${styles.langTriggerBtn} ${settingsOpen ? styles.langTriggerActive : ''}`}
+              onClick={() => setSettingsOpen(!settingsOpen)}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+              <span>{currentLangObj.badge}</span>
+              <svg
+                className={`${styles.chevron} ${settingsOpen ? styles.chevronOpen : ''}`}
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
 
-          {settingsOpen && (
-            <div className={styles.dropdownMenu}>
-              <div className={styles.dropdownHeaderTitle}>{t('menu_settings')}</div>
+            {settingsOpen && (
+              <div className={styles.langPopup}>
+                {LANGUAGES.map((l) => (
+                  <button
+                    key={l.code}
+                    type="button"
+                    className={`${styles.subMenuItem} ${language === l.code ? styles.subMenuItemActive : ''}`}
+                    onClick={() => {
+                      handleLanguageSelect(l.code);
+                      setSettingsOpen(false);
+                    }}
+                  >
+                    <span>{l.label} ({l.badge})</span>
+                    {language === l.code && <span className={styles.checkIcon}>✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Settings Gear Button when logged in */
+          <div className={styles.menuWrapper} ref={settingsRef}>
+            <button
+              type="button"
+              className={`${styles.gearBtn} ${settingsOpen ? styles.gearBtnActive : ''}`}
+              onClick={() => {
+                setSettingsOpen(!settingsOpen);
+                setProfileOpen(false);
+              }}
+              title={t('menu_settings')}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+            </button>
 
-              {/* 1. Expandable Language Item */}
-              <div className={styles.accordionBlock}>
+            {settingsOpen && (
+              <div className={styles.dropdownMenu}>
+                <div className={styles.dropdownHeaderTitle}>{t('menu_settings')}</div>
+
+                {/* 1. Expandable Language Item */}
+                <div className={styles.accordionBlock}>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${openSubMenu === 'lang' ? styles.menuItemExpanded : ''}`}
+                    onClick={() => setOpenSubMenu(openSubMenu === 'lang' ? null : 'lang')}
+                  >
+                    <span className={styles.menuItemLeft}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      </svg>
+                      <span>{t('menu_language')}</span>
+                    </span>
+                    <span className={styles.menuItemRight}>
+                      <span className={styles.menuValueBadge}>{currentLangObj.label}</span>
+                      <svg
+                        className={`${styles.subArrow} ${openSubMenu === 'lang' ? styles.subArrowOpen : ''}`}
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </span>
+                  </button>
+
+                  {openSubMenu === 'lang' && (
+                    <div className={styles.subMenuList}>
+                      {LANGUAGES.map((l) => (
+                        <button
+                          key={l.code}
+                          type="button"
+                          className={`${styles.subMenuItem} ${language === l.code ? styles.subMenuItemActive : ''}`}
+                          onClick={() => handleLanguageSelect(l.code)}
+                        >
+                          <span>{l.label} ({l.badge})</span>
+                          {language === l.code && <span className={styles.checkIcon}>✓</span>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Expandable Currency Item */}
+                <div className={styles.accordionBlock}>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${openSubMenu === 'currency' ? styles.menuItemExpanded : ''}`}
+                    onClick={() => setOpenSubMenu(openSubMenu === 'currency' ? null : 'currency')}
+                  >
+                    <span className={styles.menuItemLeft}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="12" y1="1" x2="12" y2="23" />
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                      </svg>
+                      <span>{t('menu_currency')}</span>
+                    </span>
+                    <span className={styles.menuItemRight}>
+                      <span className={styles.menuValueBadge}>{currentCurr}</span>
+                      <svg
+                        className={`${styles.subArrow} ${openSubMenu === 'currency' ? styles.subArrowOpen : ''}`}
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </span>
+                  </button>
+
+                  {openSubMenu === 'currency' && (
+                    <div className={styles.subMenuList}>
+                      {CURRENCIES.map((c) => {
+                        const fromR = plnBaseRates[currentCurr] || 1;
+                        const toR = plnBaseRates[c.code] || 1;
+                        const previewRate = (toR / fromR).toFixed(2);
+                        return (
+                          <button
+                            key={c.code}
+                            type="button"
+                            className={`${styles.subMenuItem} ${currentCurr === c.code ? styles.subMenuItemActive : ''}`}
+                            onClick={() => handleCurrencySelect(c.code)}
+                          >
+                            <span>{c.label}</span>
+                            {currentCurr === c.code ? (
+                              <span className={styles.checkIcon}>✓</span>
+                            ) : (
+                              <span className={styles.rateTag}>×{previewRate}</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Expandable Monthly Budget Limit */}
+                <div className={styles.accordionBlock}>
+                  <button
+                    type="button"
+                    className={`${styles.menuItem} ${openSubMenu === 'budget' ? styles.menuItemExpanded : ''}`}
+                    onClick={() => {
+                      setBudgetInput(user.monthlyBudget ? String(user.monthlyBudget) : '');
+                      setOpenSubMenu(openSubMenu === 'budget' ? null : 'budget');
+                    }}
+                  >
+                    <span className={styles.menuItemLeft}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <circle cx="12" cy="12" r="6" />
+                        <circle cx="12" cy="12" r="2" />
+                      </svg>
+                      <span>{t('menu_budget')}</span>
+                    </span>
+                    <span className={styles.menuValueBadge}>
+                      {user.monthlyBudget ? `${user.monthlyBudget} ${currentCurr}` : '—'}
+                    </span>
+                  </button>
+
+                  {openSubMenu === 'budget' && (
+                    <form className={styles.inlineBudgetForm} onSubmit={handleBudgetSave}>
+                      <div className={styles.inlineBudgetRow}>
+                        <input
+                          type="number"
+                          step="1"
+                          min="0"
+                          placeholder={`${t('budget_placeholder')} (${currentCurr})`}
+                          className={styles.inlineBudgetInput}
+                          value={budgetInput}
+                          onChange={(e) => setBudgetInput(e.target.value)}
+                          autoFocus
+                        />
+                        <button type="submit" className={styles.inlineBudgetSave}>OK</button>
+                        {user.monthlyBudget && (
+                          <button
+                            type="button"
+                            className={styles.inlineBudgetClear}
+                            onClick={async () => {
+                              await updateBudget(null);
+                              setOpenSubMenu(null);
+                            }}
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    </form>
+                  )}
+                </div>
+
+                <div className={styles.divider} />
+
+                {/* Categories */}
                 <button
                   type="button"
-                  className={`${styles.menuItem} ${openSubMenu === 'lang' ? styles.menuItemExpanded : ''}`}
-                  onClick={() => setOpenSubMenu(openSubMenu === 'lang' ? null : 'lang')}
+                  className={styles.menuItem}
+                  onClick={() => {
+                    setSettingsOpen(false);
+                    onOpenCategories();
+                  }}
                 >
                   <span className={styles.menuItemLeft}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="2" y1="12" x2="22" y2="12" />
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                      <line x1="7" y1="7" x2="7.01" y2="7" />
                     </svg>
-                    <span>{t('menu_language')}</span>
-                  </span>
-                  <span className={styles.menuItemRight}>
-                    <span className={styles.menuValueBadge}>{currentLangObj.label}</span>
-                    <svg
-                      className={`${styles.subArrow} ${openSubMenu === 'lang' ? styles.subArrowOpen : ''}`}
-                      width="13"
-                      height="13"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
+                    <span>{t('menu_categories')}</span>
                   </span>
                 </button>
 
-                {openSubMenu === 'lang' && (
-                  <div className={styles.subMenuList}>
-                    {LANGUAGES.map((l) => (
-                      <button
-                        key={l.code}
-                        type="button"
-                        className={`${styles.subMenuItem} ${language === l.code ? styles.subMenuItemActive : ''}`}
-                        onClick={() => handleLanguageSelect(l.code)}
-                      >
-                        <span>{l.label} ({l.badge})</span>
-                        {language === l.code && <span className={styles.checkIcon}>✓</span>}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                {/* CSV Export */}
+                <button
+                  type="button"
+                  className={styles.menuItem}
+                  onClick={() => {
+                    setSettingsOpen(false);
+                    onExportCsv();
+                  }}
+                  disabled={isExporting}
+                >
+                  <span className={styles.menuItemLeft}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    <span>{isExporting ? t('exporting') : t('menu_export_csv')}</span>
+                  </span>
+                </button>
+
+                {/* Swagger API Docs */}
+                <a
+                  href={`${API_BASE_URL}/docs`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.menuItem}
+                  onClick={() => setSettingsOpen(false)}
+                >
+                  <span className={styles.menuItemLeft}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="16 18 22 12 16 6" />
+                      <polyline points="8 6 2 12 8 18" />
+                    </svg>
+                    <span>{t('menu_api_docs')}</span>
+                  </span>
+                </a>
               </div>
-
-              {user && (
-                <>
-                  {/* 2. Expandable Currency Item */}
-                  <div className={styles.accordionBlock}>
-                    <button
-                      type="button"
-                      className={`${styles.menuItem} ${openSubMenu === 'currency' ? styles.menuItemExpanded : ''}`}
-                      onClick={() => setOpenSubMenu(openSubMenu === 'currency' ? null : 'currency')}
-                    >
-                      <span className={styles.menuItemLeft}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="12" y1="1" x2="12" y2="23" />
-                          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                        </svg>
-                        <span>{t('menu_currency')}</span>
-                      </span>
-                      <span className={styles.menuItemRight}>
-                        <span className={styles.menuValueBadge}>{currentCurr}</span>
-                        <svg
-                          className={`${styles.subArrow} ${openSubMenu === 'currency' ? styles.subArrowOpen : ''}`}
-                          width="13"
-                          height="13"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                      </span>
-                    </button>
-
-                    {openSubMenu === 'currency' && (
-                      <div className={styles.subMenuList}>
-                        {CURRENCIES.map((c) => {
-                          const fromR = plnBaseRates[currentCurr] || 1;
-                          const toR = plnBaseRates[c.code] || 1;
-                          const previewRate = (toR / fromR).toFixed(2);
-                          return (
-                            <button
-                              key={c.code}
-                              type="button"
-                              className={`${styles.subMenuItem} ${currentCurr === c.code ? styles.subMenuItemActive : ''}`}
-                              onClick={() => handleCurrencySelect(c.code)}
-                            >
-                              <span>{c.label}</span>
-                              {currentCurr === c.code ? (
-                                <span className={styles.checkIcon}>✓</span>
-                              ) : (
-                                <span className={styles.rateTag}>×{previewRate}</span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 3. Expandable Monthly Budget Limit */}
-                  <div className={styles.accordionBlock}>
-                    <button
-                      type="button"
-                      className={`${styles.menuItem} ${openSubMenu === 'budget' ? styles.menuItemExpanded : ''}`}
-                      onClick={() => {
-                        setBudgetInput(user.monthlyBudget ? String(user.monthlyBudget) : '');
-                        setOpenSubMenu(openSubMenu === 'budget' ? null : 'budget');
-                      }}
-                    >
-                      <span className={styles.menuItemLeft}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="12" cy="12" r="10" />
-                          <circle cx="12" cy="12" r="6" />
-                          <circle cx="12" cy="12" r="2" />
-                        </svg>
-                        <span>{t('menu_budget')}</span>
-                      </span>
-                      <span className={styles.menuValueBadge}>
-                        {user.monthlyBudget ? `${user.monthlyBudget} ${currentCurr}` : '—'}
-                      </span>
-                    </button>
-
-                    {openSubMenu === 'budget' && (
-                      <form className={styles.inlineBudgetForm} onSubmit={handleBudgetSave}>
-                        <div className={styles.inlineBudgetRow}>
-                          <input
-                            type="number"
-                            step="1"
-                            min="0"
-                            placeholder={`${t('budget_placeholder')} (${currentCurr})`}
-                            className={styles.inlineBudgetInput}
-                            value={budgetInput}
-                            onChange={(e) => setBudgetInput(e.target.value)}
-                            autoFocus
-                          />
-                          <button type="submit" className={styles.inlineBudgetSave}>OK</button>
-                          {user.monthlyBudget && (
-                            <button
-                              type="button"
-                              className={styles.inlineBudgetClear}
-                              onClick={async () => {
-                                await updateBudget(null);
-                                setOpenSubMenu(null);
-                              }}
-                            >
-                              ✕
-                            </button>
-                          )}
-                        </div>
-                      </form>
-                    )}
-                  </div>
-
-                  <div className={styles.divider} />
-
-                  {/* Categories */}
-                  <button
-                    type="button"
-                    className={styles.menuItem}
-                    onClick={() => {
-                      setSettingsOpen(false);
-                      onOpenCategories();
-                    }}
-                  >
-                    <span className={styles.menuItemLeft}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-                        <line x1="7" y1="7" x2="7.01" y2="7" />
-                      </svg>
-                      <span>{t('menu_categories')}</span>
-                    </span>
-                  </button>
-
-                  {/* CSV Export */}
-                  <button
-                    type="button"
-                    className={styles.menuItem}
-                    onClick={() => {
-                      setSettingsOpen(false);
-                      onExportCsv();
-                    }}
-                    disabled={isExporting}
-                  >
-                    <span className={styles.menuItemLeft}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                      </svg>
-                      <span>{isExporting ? t('exporting') : t('menu_export_csv')}</span>
-                    </span>
-                  </button>
-
-                  {/* Swagger API Docs */}
-                  <a
-                    href={`${API_BASE_URL}/docs`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.menuItem}
-                    onClick={() => setSettingsOpen(false)}
-                  >
-                    <span className={styles.menuItemLeft}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="16 18 22 12 16 6" />
-                        <polyline points="8 6 2 12 8 18" />
-                      </svg>
-                      <span>{t('menu_api_docs')}</span>
-                    </span>
-                  </a>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* User Profile Button */}
         {user && (
