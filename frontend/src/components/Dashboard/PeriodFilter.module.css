@@ -1,4 +1,6 @@
 .topToolbar {
+  position: relative;
+  z-index: 400;
   display: flex;
   justify-content: space-between;
   align-items: center;

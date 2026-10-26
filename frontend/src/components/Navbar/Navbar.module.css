@@ -1,10 +1,11 @@
 .header {
+  position: relative;
+  z-index: 900;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px 24px;
-  background-color: rgba(23, 24, 31, 0.85);
-  backdrop-filter: blur(12px);
+  background-color: #17181f;
   border: 1px solid #262837;
   border-radius: 14px;
   margin-bottom: 28px;
