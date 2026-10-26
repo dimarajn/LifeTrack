@@ -102,7 +102,43 @@ function MainApp() {
 
   useEffect(() => {
     loadDashboardData(activeRange);
-  }, [loadDashboardData, activeRange, user?.currency]);
+  }, [loadDashboardData, activeRange]);
+
+  const handleInstantCurrencyConvert = (newCurrency, rate) => {
+    if (!rate || rate === 1) return;
+    const round2 = (v) => Math.round(Number(v) * rate * 100) / 100;
+
+    setTransactions(prev =>
+      prev.map(tx => ({ ...tx, amount: Math.max(0.01, round2(tx.amount)) }))
+    );
+
+    setGoals(prev =>
+      prev.map(g => ({
+        ...g,
+        targetAmount: Math.max(0.01, round2(g.targetAmount)),
+        currentAmount: round2(g.currentAmount)
+      }))
+    );
+
+    setStats(prev => {
+      if (!prev) return prev;
+      const newBreakdown = {};
+      if (prev.categoryBreakdown) {
+        for (const [k, v] of Object.entries(prev.categoryBreakdown)) {
+          newBreakdown[k] = round2(v);
+        }
+      }
+      const totalIncome = round2(prev.totalIncome || 0);
+      const totalExpense = round2(prev.totalExpense || 0);
+      return {
+        ...prev,
+        totalIncome,
+        totalExpense,
+        balance: Math.round((totalIncome - totalExpense) * 100) / 100,
+        categoryBreakdown: newBreakdown
+      };
+    });
+  };
 
   const handlePeriodChange = (period, customDates) => {
     const range = calculateDateRange(period, customDates);
@@ -185,6 +221,7 @@ function MainApp() {
         onOpenCategories={() => setIsCategoryModalOpen(true)}
         onExportCsv={handleExportCsv}
         isExporting={isExporting}
+        onInstantConvert={handleInstantCurrencyConvert}
       />
 
       {!isAuthenticated ? (

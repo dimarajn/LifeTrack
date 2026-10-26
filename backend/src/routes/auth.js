@@ -156,18 +156,29 @@ const FALLBACK_FROM_PLN = {
   GBP: 0.191
 };
 
+// In-memory cache for exchange rates (1 hour TTL) for instant zero-latency lookups
+const ratesCache = {};
+const CACHE_TTL_MS = 60 * 60 * 1000;
+
 async function fetchLiveRates(baseCurrency = 'PLN') {
   const base = baseCurrency.toUpperCase();
+  const cached = ratesCache[base];
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    return cached.data;
+  }
+
   try {
     const res = await fetch(`https://api.frankfurter.app/latest?from=${base}&to=PLN,EUR,USD,GBP`);
     if (res.ok) {
       const data = await res.json();
-      return {
+      const result = {
         base,
         date: data.date,
         source: 'ECB (European Central Bank)',
         rates: { ...data.rates, [base]: 1 }
       };
+      ratesCache[base] = { timestamp: Date.now(), data: result };
+      return result;
     }
   } catch (err) {
     console.warn('Live exchange rate fetch warning, using fallback:', err.message);
@@ -187,6 +198,9 @@ async function fetchLiveRates(baseCurrency = 'PLN') {
   };
 }
 
+// Pre-warm PLN/EUR/USD/GBP rates on server start
+['PLN', 'EUR', 'USD', 'GBP'].forEach(c => fetchLiveRates(c).catch(() => {}));
+
 // GET /api/auth/rates - Get live exchange rates for currency selector
 router.get('/rates', async (req, res) => {
   try {
@@ -198,7 +212,7 @@ router.get('/rates', async (req, res) => {
   }
 });
 
-// PUT /api/auth/currency - Update user preferred currency & convert all amounts by live exchange rate
+// PUT /api/auth/currency - Update user preferred currency & convert all amounts in a single fast SQL batch
 router.put('/currency', authenticateToken, async (req, res) => {
   try {
     const { currency } = req.body;
@@ -224,48 +238,31 @@ router.put('/currency', authenticateToken, async (req, res) => {
       return res.json({
         message: 'Currency unchanged',
         rate: 1,
-        user: {
-          id: currentUser.id,
-          email: currentUser.email,
-          name: currentUser.name,
-          currency: currentUser.currency,
-          monthlyBudget: currentUser.monthlyBudget,
-          createdAt: currentUser.createdAt
-        }
+        user: currentUser
       });
     }
 
-    // Fetch live exchange rate from oldCurrency -> targetCurrency
+    // Instant cached lookup for exchange rate
     const rateData = await fetchLiveRates(oldCurrency);
-    const rate = rateData.rates[targetCurrency] || 1;
-
-    // Fetch user's transactions and goals to convert their amounts
-    const [userTransactions, userGoals] = await Promise.all([
-      prisma.transaction.findMany({ where: { userId: req.user.id } }),
-      prisma.goal.findMany({ where: { userId: req.user.id } })
-    ]);
+    const rate = Number(rateData.rates[targetCurrency] || 1);
 
     const newBudget = currentUser.monthlyBudget
       ? Math.round(currentUser.monthlyBudget * rate * 100) / 100
       : null;
 
-    // Execute all conversions atomically
-    const ops = [
-      ...userTransactions.map(tx =>
-        prisma.transaction.update({
-          where: { id: tx.id },
-          data: { amount: Math.max(0.01, Math.round(tx.amount * rate * 100) / 100) }
-        })
-      ),
-      ...userGoals.map(g =>
-        prisma.goal.update({
-          where: { id: g.id },
-          data: {
-            targetAmount: Math.max(0.01, Math.round(g.targetAmount * rate * 100) / 100),
-            currentAmount: Math.round(g.currentAmount * rate * 100) / 100
-          }
-        })
-      ),
+    // Single bulk SQL update instead of N individual row updates
+    const [, , updatedUser] = await prisma.$transaction([
+      prisma.$executeRaw`
+        UPDATE "Transaction"
+        SET amount = GREATEST(0.01, ROUND((amount * ${rate})::numeric, 2)::double precision)
+        WHERE "userId" = ${req.user.id}
+      `,
+      prisma.$executeRaw`
+        UPDATE "Goal"
+        SET "targetAmount" = GREATEST(0.01, ROUND(("targetAmount" * ${rate})::numeric, 2)::double precision),
+            "currentAmount" = ROUND(("currentAmount" * ${rate})::numeric, 2)::double precision
+        WHERE "userId" = ${req.user.id}
+      `,
       prisma.user.update({
         where: { id: req.user.id },
         data: {
@@ -281,10 +278,7 @@ router.put('/currency', authenticateToken, async (req, res) => {
           createdAt: true
         }
       })
-    ];
-
-    const results = await prisma.$transaction(ops);
-    const updatedUser = results[results.length - 1];
+    ]);
 
     res.json({
       message: `Currency converted from ${oldCurrency} to ${targetCurrency} (rate: ${rate})`,

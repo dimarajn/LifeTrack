@@ -46,10 +46,19 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const updateCurrency = async (newCurrency) => {
+  const updateCurrency = async (newCurrency, optimisticRate = null) => {
+    if (optimisticRate && user) {
+      setUser(prev => prev ? ({
+        ...prev,
+        currency: newCurrency,
+        monthlyBudget: prev.monthlyBudget
+          ? Math.round(prev.monthlyBudget * optimisticRate * 100) / 100
+          : null
+      }) : prev);
+    }
     const data = await api.updateCurrency(newCurrency);
     setUser(data.user);
-    return data.user;
+    return data;
   };
 
   const updateBudget = async (monthlyBudget) => {

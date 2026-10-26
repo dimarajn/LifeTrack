@@ -4,11 +4,15 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { api, API_BASE_URL } from '../../api/client';
 
+// Default reference rates relative to PLN for instant 0ms optimistic calculation
+const BASE_PLN_RATES = { PLN: 1, EUR: 0.228, USD: 0.255, GBP: 0.191 };
+
 export default function Navbar({
   serverMessage,
   onOpenCategories,
   onExportCsv,
-  isExporting
+  isExporting,
+  onInstantConvert
 }) {
   const { user, logout, updateCurrency, updateBudget, deleteAccount } = useAuth();
   const { language, setLanguage, t } = useLanguage();
@@ -21,12 +25,12 @@ export default function Navbar({
   const menuRef = useRef(null);
 
   useEffect(() => {
-    if (menuOpen && user?.currency) {
+    if (user?.currency) {
       api.getExchangeRates(user.currency)
         .then(data => setLiveRates(data))
         .catch(() => {});
     }
-  }, [menuOpen, user?.currency]);
+  }, [user?.currency]);
 
   useEffect(() => {
     function handleOutside(e) {
@@ -40,14 +44,22 @@ export default function Navbar({
   }, []);
 
   const handleCurrencySelect = async (curr) => {
-    if (convertingCurrency || (user?.currency || 'PLN') === curr) return;
-    setConvertingCurrency(true);
+    const oldCurr = user?.currency || 'PLN';
+    if (oldCurr === curr) return;
+
+    // Compute exact conversion rate immediately (0ms delay)
+    const rate = liveRates?.base === oldCurr && liveRates?.rates?.[curr]
+      ? Number(liveRates.rates[curr])
+      : (BASE_PLN_RATES[curr] / BASE_PLN_RATES[oldCurr]);
+
+    if (onInstantConvert) {
+      onInstantConvert(curr, rate);
+    }
+
     try {
-      await updateCurrency(curr);
+      await updateCurrency(curr, rate);
     } catch (err) {
       console.error('Failed to change currency:', err);
-    } finally {
-      setConvertingCurrency(false);
     }
   };
 
@@ -170,17 +182,13 @@ export default function Navbar({
                   </div>
                   {liveRates?.rates && (
                     <div className={styles.rateHintRow}>
-                      {convertingCurrency ? (
-                        <span>Przeliczanie waluty... / Converting...</span>
-                      ) : (
-                        <span>
-                          1 {liveRates.base} ≈{' '}
-                          {['PLN', 'EUR', 'USD', 'GBP']
-                            .filter(c => c !== liveRates.base && liveRates.rates[c])
-                            .map(c => `${Number(liveRates.rates[c]).toFixed(2)} ${c}`)
-                            .join(' • ')}
-                        </span>
-                      )}
+                      <span>
+                        1 {liveRates.base} ≈{' '}
+                        {['PLN', 'EUR', 'USD', 'GBP']
+                          .filter(c => c !== liveRates.base && liveRates.rates[c])
+                          .map(c => `${Number(liveRates.rates[c]).toFixed(2)} ${c}`)
+                          .join(' • ')}
+                      </span>
                     </div>
                   )}
                 </div>
