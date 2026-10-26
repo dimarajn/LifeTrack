@@ -170,6 +170,35 @@
   width: 240px;
 }
 
+@media (max-width: 600px) {
+  .header {
+    padding: 12px 14px;
+  }
+
+  .title {
+    font-size: 17px;
+  }
+
+  .userName {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .menuWrapper {
+    position: static;
+  }
+
+  .dropdownMenu,
+  .profileDropdown {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    top: calc(100% + 8px);
+  }
+}
+
 @keyframes popIn {
   from {
     opacity: 0;

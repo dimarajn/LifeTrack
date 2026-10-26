@@ -106,6 +106,20 @@
   animation: fadeIn 0.14s ease-out;
 }
 
+@media (max-width: 600px) {
+  .dropdownWrapper {
+    position: static;
+  }
+
+  .popupMenu {
+    left: 0;
+    right: 0;
+    min-width: unset;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
