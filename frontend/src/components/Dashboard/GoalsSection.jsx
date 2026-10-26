@@ -33,7 +33,7 @@ export default function GoalsSection({
     if (!dateStr) return t('goals_no_deadline');
     try {
       const d = new Date(dateStr);
-      const locale = language === 'pl' ? 'pl-PL' : 'en-US';
+      const locale = language === 'pl' ? 'pl-PL' : language === 'es' ? 'es-ES' : 'en-US';
       const formatted = d.toLocaleDateString(locale, {
         day: '2-digit',
         month: 'short',

@@ -46,19 +46,21 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const updateCurrency = async (newCurrency, optimisticRate = null) => {
-    if (optimisticRate && user) {
-      setUser(prev => prev ? ({
+  const updateCurrency = (newCurrency, optimisticRate = null) => {
+    setUser(prev => {
+      if (!prev) return prev;
+      return {
         ...prev,
         currency: newCurrency,
-        monthlyBudget: prev.monthlyBudget
+        monthlyBudget: prev.monthlyBudget && optimisticRate
           ? Math.round(prev.monthlyBudget * optimisticRate * 100) / 100
-          : null
-      }) : prev);
-    }
-    const data = await api.updateCurrency(newCurrency);
-    setUser(data.user);
-    return data;
+          : prev.monthlyBudget
+      };
+    });
+    // Persist conversion in background without blocking UI
+    api.updateCurrency(newCurrency).catch(err => {
+      console.error('Background currency sync error:', err);
+    });
   };
 
   const updateBudget = async (monthlyBudget) => {

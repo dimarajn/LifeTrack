@@ -44,7 +44,7 @@ export default function TransactionList({
   const formatDate = (dateStr) => {
     try {
       const d = new Date(dateStr);
-      const locale = language === 'pl' ? 'pl-PL' : 'en-US';
+      const locale = language === 'pl' ? 'pl-PL' : language === 'es' ? 'es-ES' : 'en-US';
       return d.toLocaleDateString(locale, {
         day: '2-digit',
         month: 'short',
