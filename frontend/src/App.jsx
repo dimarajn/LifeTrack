@@ -55,7 +55,7 @@ function calculateDateRange(period, customDates) {
 }
 
 function MainApp() {
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const { t } = useLanguage();
   const [serverMessage, setServerMessage] = useState('');
   const [transactions, setTransactions] = useState([]);
@@ -102,7 +102,7 @@ function MainApp() {
 
   useEffect(() => {
     loadDashboardData(activeRange);
-  }, [loadDashboardData, activeRange]);
+  }, [loadDashboardData, activeRange, user?.currency]);
 
   const handlePeriodChange = (period, customDates) => {
     const range = calculateDateRange(period, customDates);

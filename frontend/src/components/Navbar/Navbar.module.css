@@ -239,6 +239,28 @@
   letter-spacing: 0.04em;
 }
 
+.labelWithStatus {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.liveRateBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #34d399;
+  background-color: rgba(16, 185, 129, 0.12);
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+.rateHintRow {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
 .segmentedGroup {
   display: flex;
   background-color: #12131a;

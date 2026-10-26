@@ -148,7 +148,57 @@ router.get('/me', authenticateToken, async (req, res) => {
   }
 });
 
-// PUT /api/auth/currency - Update user preferred currency
+// Fallback exchange rates (relative to 1 PLN) in case external API is unreachable
+const FALLBACK_FROM_PLN = {
+  PLN: 1,
+  EUR: 0.228,
+  USD: 0.255,
+  GBP: 0.191
+};
+
+async function fetchLiveRates(baseCurrency = 'PLN') {
+  const base = baseCurrency.toUpperCase();
+  try {
+    const res = await fetch(`https://api.frankfurter.app/latest?from=${base}&to=PLN,EUR,USD,GBP`);
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        base,
+        date: data.date,
+        source: 'ECB (European Central Bank)',
+        rates: { ...data.rates, [base]: 1 }
+      };
+    }
+  } catch (err) {
+    console.warn('Live exchange rate fetch warning, using fallback:', err.message);
+  }
+
+  // Fallback calculation via PLN
+  const baseInPln = FALLBACK_FROM_PLN[base] || 1;
+  const fallbackRates = {};
+  for (const [curr, val] of Object.entries(FALLBACK_FROM_PLN)) {
+    fallbackRates[curr] = Number((val / baseInPln).toFixed(5));
+  }
+  return {
+    base,
+    date: new Date().toISOString().split('T')[0],
+    source: 'Fallback',
+    rates: fallbackRates
+  };
+}
+
+// GET /api/auth/rates - Get live exchange rates for currency selector
+router.get('/rates', async (req, res) => {
+  try {
+    const base = (req.query.base || 'PLN').toUpperCase();
+    const rateInfo = await fetchLiveRates(base);
+    res.json(rateInfo);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch exchange rates' });
+  }
+});
+
+// PUT /api/auth/currency - Update user preferred currency & convert all amounts by live exchange rate
 router.put('/currency', authenticateToken, async (req, res) => {
   try {
     const { currency } = req.body;
@@ -158,21 +208,88 @@ router.put('/currency', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Invalid currency. Supported: PLN, EUR, USD, GBP' });
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id: req.user.id },
-      data: { currency: currency.toUpperCase() },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        currency: true,
-        monthlyBudget: true,
-        createdAt: true
-      }
+    const targetCurrency = currency.toUpperCase();
+
+    const currentUser = await prisma.user.findUnique({
+      where: { id: req.user.id }
     });
 
+    if (!currentUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const oldCurrency = (currentUser.currency || 'PLN').toUpperCase();
+
+    if (oldCurrency === targetCurrency) {
+      return res.json({
+        message: 'Currency unchanged',
+        rate: 1,
+        user: {
+          id: currentUser.id,
+          email: currentUser.email,
+          name: currentUser.name,
+          currency: currentUser.currency,
+          monthlyBudget: currentUser.monthlyBudget,
+          createdAt: currentUser.createdAt
+        }
+      });
+    }
+
+    // Fetch live exchange rate from oldCurrency -> targetCurrency
+    const rateData = await fetchLiveRates(oldCurrency);
+    const rate = rateData.rates[targetCurrency] || 1;
+
+    // Fetch user's transactions and goals to convert their amounts
+    const [userTransactions, userGoals] = await Promise.all([
+      prisma.transaction.findMany({ where: { userId: req.user.id } }),
+      prisma.goal.findMany({ where: { userId: req.user.id } })
+    ]);
+
+    const newBudget = currentUser.monthlyBudget
+      ? Math.round(currentUser.monthlyBudget * rate * 100) / 100
+      : null;
+
+    // Execute all conversions atomically
+    const ops = [
+      ...userTransactions.map(tx =>
+        prisma.transaction.update({
+          where: { id: tx.id },
+          data: { amount: Math.max(0.01, Math.round(tx.amount * rate * 100) / 100) }
+        })
+      ),
+      ...userGoals.map(g =>
+        prisma.goal.update({
+          where: { id: g.id },
+          data: {
+            targetAmount: Math.max(0.01, Math.round(g.targetAmount * rate * 100) / 100),
+            currentAmount: Math.round(g.currentAmount * rate * 100) / 100
+          }
+        })
+      ),
+      prisma.user.update({
+        where: { id: req.user.id },
+        data: {
+          currency: targetCurrency,
+          monthlyBudget: newBudget
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          currency: true,
+          monthlyBudget: true,
+          createdAt: true
+        }
+      })
+    ];
+
+    const results = await prisma.$transaction(ops);
+    const updatedUser = results[results.length - 1];
+
     res.json({
-      message: 'Currency updated successfully',
+      message: `Currency converted from ${oldCurrency} to ${targetCurrency} (rate: ${rate})`,
+      rate,
+      rateDate: rateData.date,
       user: updatedUser
     });
   } catch (error) {

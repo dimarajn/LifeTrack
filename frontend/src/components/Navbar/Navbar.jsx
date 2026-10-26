@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import styles from './Navbar.module.css';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { API_BASE_URL } from '../../api/client';
+import { api, API_BASE_URL } from '../../api/client';
 
 export default function Navbar({
   serverMessage,
@@ -16,7 +16,17 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState(false);
   const [budgetInput, setBudgetInput] = useState('');
+  const [convertingCurrency, setConvertingCurrency] = useState(false);
+  const [liveRates, setLiveRates] = useState(null);
   const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (menuOpen && user?.currency) {
+      api.getExchangeRates(user.currency)
+        .then(data => setLiveRates(data))
+        .catch(() => {});
+    }
+  }, [menuOpen, user?.currency]);
 
   useEffect(() => {
     function handleOutside(e) {
@@ -30,10 +40,14 @@ export default function Navbar({
   }, []);
 
   const handleCurrencySelect = async (curr) => {
+    if (convertingCurrency || (user?.currency || 'PLN') === curr) return;
+    setConvertingCurrency(true);
     try {
       await updateCurrency(curr);
     } catch (err) {
       console.error('Failed to change currency:', err);
+    } finally {
+      setConvertingCurrency(false);
     }
   };
 
@@ -137,12 +151,16 @@ export default function Navbar({
 
                 {/* Currency Segmented Control */}
                 <div className={styles.controlSection}>
-                  <span className={styles.sectionLabel}>{t('menu_currency')}</span>
+                  <div className={styles.labelWithStatus}>
+                    <span className={styles.sectionLabel}>{t('menu_currency')}</span>
+                    <span className={styles.liveRateBadge}>ECB Live</span>
+                  </div>
                   <div className={styles.segmentedGroup}>
                     {['PLN', 'EUR', 'USD', 'GBP'].map((curr) => (
                       <button
                         key={curr}
                         type="button"
+                        disabled={convertingCurrency}
                         className={`${styles.segmentBtn} ${(user.currency || 'PLN') === curr ? styles.segmentBtnActive : ''}`}
                         onClick={() => handleCurrencySelect(curr)}
                       >
@@ -150,6 +168,21 @@ export default function Navbar({
                       </button>
                     ))}
                   </div>
+                  {liveRates?.rates && (
+                    <div className={styles.rateHintRow}>
+                      {convertingCurrency ? (
+                        <span>Przeliczanie waluty... / Converting...</span>
+                      ) : (
+                        <span>
+                          1 {liveRates.base} ≈{' '}
+                          {['PLN', 'EUR', 'USD', 'GBP']
+                            .filter(c => c !== liveRates.base && liveRates.rates[c])
+                            .map(c => `${Number(liveRates.rates[c]).toFixed(2)} ${c}`)
+                            .join(' • ')}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Language Segmented Control */}
